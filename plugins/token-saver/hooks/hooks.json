@@ -1,5 +1,5 @@
 {
-  "description": "Allay token-saver: compresses verbose bash output, blocks duplicate file reads",
+  "description": "Allay token-saver: compresses verbose bash output, blocks duplicate file reads, ages old tool results",
   "hooks": {
     "PreToolUse": [
       {
@@ -18,6 +18,18 @@
           {
             "type": "command",
             "command": "bash \"${CLAUDE_PLUGIN_ROOT}/hooks/pre-tool-use/block-duplicates.sh\"",
+            "timeout": 10
+          }
+        ]
+      }
+    ],
+    "PostToolUse": [
+      {
+        "matcher": "Bash|Read|Write|Edit|MultiEdit|Glob|Grep",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash \"${CLAUDE_PLUGIN_ROOT}/hooks/post-tool-use/age-results.sh\"",
             "timeout": 10
           }
         ]
