@@ -16,6 +16,7 @@
 | Command | /allay:analytics | Per-tool token consumption breakdown |
 | Command | /allay:doctor | Diagnostic self-check for all plugins |
 | Agent | analyst | Background report generation (Haiku, forked) |
+| Agent | forecaster | Runway forecast with confidence interval (Haiku, forked) |
 
 ## Architecture
 

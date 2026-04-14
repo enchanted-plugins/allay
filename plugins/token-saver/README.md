@@ -11,6 +11,7 @@
 | Hook | age-results.sh | Alerts on aged tool results consuming context |
 | Skill | compression-rules | Reference for all compression rules and bypass |
 | Skill | output-efficiency | Terse mode instructions (off/lite/full/ultra) |
+| Agent | compressor | Compression strategy analysis (Haiku, forked) |
 
 ## Architecture
 

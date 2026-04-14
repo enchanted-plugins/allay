@@ -151,6 +151,7 @@ Register the plugin in `.claude-plugin/marketplace.json`.
 | `metrics.sh` | `acquire_lock()`, `release_lock()`, `log_metric()` |
 | `sanitize.sh` | `sanitize_path()`, `validate_json()`, `sanitize_for_log()` |
 | `scripts/report-gen.sh` | Session report generator (text + optional PDF) |
+| `scripts/learnings.sh` | Bayesian Strategy Accumulation — session learning persistence |
 
 Hooks resolve shared code via:
 ```bash
