@@ -149,10 +149,37 @@ fi)
 
  Methodology: conservative multipliers.
  Bash=2K/ea, DupBlock=4K/ea, Drift=800tok/turn.
+
+ ── Learnings ────────────────────────
+$(LEARNINGS_JSON="${PLUGINS_DIR}/context-guard/state/learnings.json"
+if [[ -f "$LEARNINGS_JSON" ]] && jq empty "$LEARNINGS_JSON" >/dev/null 2>&1; then
+  LEARN_SESSIONS=$(jq -r '.sessions_recorded // 0' "$LEARNINGS_JSON")
+  echo " Sessions recorded:       ${LEARN_SESSIONS}"
+  # Top 3 strategies by rate
+  TOP_STRATS=$(jq -r '.strategy_rates // {} | to_entries | sort_by(-.value.rate) | .[:3][] | " \(.key): \(.value.rate * 100 | floor)% success (\(.value.fires) fires)"' "$LEARNINGS_JSON" 2>/dev/null)
+  if [[ -n "$TOP_STRATS" ]]; then
+    echo " Top strategies:"
+    echo "$TOP_STRATS"
+  fi
+  # Active alerts
+  LEARN_ALERTS=$(jq -r '.alerts // [] | .[]' "$LEARNINGS_JSON" 2>/dev/null)
+  if [[ -n "$LEARN_ALERTS" ]]; then
+    echo " Active alerts:"
+    echo "$LEARN_ALERTS" | while read -r alert; do echo "   - $alert"; done
+  fi
+else
+  echo " No learnings yet. Will accumulate after sessions."
+fi)
 ══════════════════════════════════════
 REPORT
 
 echo "$OUTPUT_PATH"
+
+# ── Update learnings (Bayesian Strategy Accumulation) ──
+LEARNINGS_SCRIPT="$(cd "$(dirname "$0")" && pwd)/learnings.sh"
+if [[ -f "$LEARNINGS_SCRIPT" ]]; then
+  bash "$LEARNINGS_SCRIPT" "$PLUGINS_DIR" 2>/dev/null || true
+fi
 
 # ── Optional: generate PDF if Python 3 available ──
 if command -v python3 >/dev/null 2>&1; then
