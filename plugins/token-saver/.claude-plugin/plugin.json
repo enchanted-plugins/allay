@@ -8,5 +8,6 @@
   "skills": [
     "./skills/compression-rules/",
     "./skills/output-efficiency/"
-  ]
+  ],
+  "agents": "./agents/"
 }
