@@ -13,30 +13,40 @@ The context health platform that learns what wastes your tokens — and stops it
 
 ## How It Works
 
-```
-                          Claude Code
-                              │
-            ┌─────────────────┼─────────────────┐
-            ▼                 ▼                  ▼
-       PreToolUse        PostToolUse         PreCompact
-            │                 │                  │
-     ┌──────┴──────┐   ┌─────┴──────┐    ┌──────┴──────┐
-     │ token-saver │   │context-guard│    │ state-keeper│
-     │             │   │             │    │             │
-     │ A3 compress │   │ A1 drift    │    │ A4 atomic   │
-     │ A5 dedup    │   │ A2 runway   │    │    write    │
-     │ A6 delta    │   │    token    │    │ checkpoint  │
-     │    aging    │   │    est.     │    │ auto-restore│
-     └──────┬──────┘   └─────┬──────┘    └──────┬──────┘
-            │                │                   │
-            ▼                ▼                   ▼
-        exit 0/2       metrics.jsonl        checkpoint.md
-        updatedInput   stderr alert         metrics.jsonl
-                             │
-                     ┌───────┴────────┐
-                     │ A7 learnings   │
-                     │ (after report) │
-                     └────────────────┘
+```mermaid
+graph TD
+    CC(["🔧 Claude Code — Tool Calls"])
+
+    CC -->|PreToolUse| TS
+    CC -->|PostToolUse| CG
+    CC -->|PreCompact| SK
+
+    subgraph TS["token-saver"]
+        TS_A3["A3 Shannon Compression<br/><small>15 bash rules</small>"]
+        TS_A5["A5 Content-Addressable Dedup<br/><small>SHA-256 + TTL cache</small>"]
+        TS_A6["A6 Content-Addressable Delta<br/><small>diff on re-read</small>"]
+        TS_AGE["Temporal Decay<br/><small>age-based alerts</small>"]
+    end
+
+    subgraph CG["context-guard"]
+        CG_A1["A1 Markov Drift Detection<br/><small>read loop · edit-revert · fail loop</small>"]
+        CG_A2["A2 Linear Runway Forecasting<br/><small>token estimation per turn</small>"]
+    end
+
+    subgraph SK["state-keeper"]
+        SK_A4["A4 Atomic State Serialization<br/><small>checkpoint before wipe</small>"]
+    end
+
+    TS -->|"exit 0/2<br/>updatedInput"| OUT_TS(["tokens saved"])
+    CG -->|"stderr alert<br/>metrics.jsonl"| OUT_CG(["drift detected"])
+    SK -->|"checkpoint.md"| OUT_SK(["context preserved"])
+    OUT_CG --> A7["A7 Bayesian Strategy Accumulation<br/><small>learns across sessions</small>"]
+
+    style CC fill:#0d1117,stroke:#bc8cff,color:#e6edf3
+    style TS fill:#161b22,stroke:#58a6ff,color:#e6edf3
+    style CG fill:#161b22,stroke:#3fb950,color:#e6edf3
+    style SK fill:#161b22,stroke:#d29922,color:#e6edf3
+    style A7 fill:#1c2333,stroke:#bc8cff,color:#e6edf3
 ```
 
 Three plugins. Three lifecycle phases. No overlap. No dependencies between plugins.
@@ -101,6 +111,28 @@ interventions worked — then adjusts its internal model via exponential moving 
 
 `/allay:report` shows exact savings per feature, drift alerts fired, turns
 remaining, and accumulated learnings. Conservative methodology. We don't inflate numbers.
+
+## Session Lifecycle
+
+```mermaid
+graph LR
+    A(["🟢 Session Start"]) --> B["Turn N:<br/>Tool Call"]
+    B --> C{"PreToolUse<br/><small>token-saver</small>"}
+    C -->|compress / dedup / delta| D["Tool Executes"]
+    D --> E{"PostToolUse<br/><small>context-guard</small>"}
+    E -->|"drift detect<br/>token estimation"| B
+    B -.->|"Context full"| F["⚠️ Compaction"]
+    F --> G{"PreCompact<br/><small>state-keeper</small>"}
+    G -->|"checkpoint.md saved"| H["Context Wiped"]
+    H --> I["state-recovery skill<br/>or restorer agent"]
+    I -->|"Read checkpoint.md"| J(["🔄 Session Continues"])
+
+    style F fill:#f85149,color:#fff
+    style G fill:#d29922,color:#0d1117
+    style I fill:#3fb950,color:#0d1117
+```
+
+Every tool call flows through the same pipeline. When context fills up, state-keeper saves a checkpoint before the wipe, and the restorer agent brings it back autonomously.
 
 ---
 
@@ -218,6 +250,45 @@ bash <(curl -s https://raw.githubusercontent.com/enchanted-plugins/allay/main/in
 
 ## What You Get Per Session
 
+```mermaid
+graph TB
+    subgraph tools["Tool Calls"]
+        Bash["Bash"]
+        Read["Read"]
+        Write["Write / Edit"]
+        Search["Glob / Grep"]
+    end
+
+    subgraph ts_state["token-saver/state/"]
+        ts_m["metrics.jsonl<br/><small>bash_compressed · duplicate_blocked<br/>delta_read · result_aged</small>"]
+    end
+
+    subgraph cg_state["context-guard/state/"]
+        cg_m["metrics.jsonl<br/><small>turn (token est.) · drift_detected</small>"]
+        cg_l["learnings.json<br/><small>strategy rates across sessions</small>"]
+    end
+
+    subgraph sk_state["state-keeper/state/"]
+        sk_c["checkpoint.md<br/><small>branch · files · instructions</small>"]
+        sk_r["remember.md<br/><small>user-flagged items</small>"]
+        sk_m["metrics.jsonl<br/><small>checkpoint_saved</small>"]
+    end
+
+    Bash --> ts_m
+    Read --> ts_m
+    Bash --> cg_m
+    Read --> cg_m
+    Write --> cg_m
+    Search --> cg_m
+
+    cg_m --> report(["📊 /allay:report"])
+    ts_m --> report
+    sk_m --> report
+    cg_m --> cg_l
+
+    style report fill:#39d353,color:#0d1117
+```
+
 ```
 state-keeper/state/
 ├── checkpoint.md        # Pre-compaction snapshot (branch, files, instructions)
@@ -284,6 +355,12 @@ Bypass: prefix with `FULL:` to skip compression.
 
 Combined: 30-45% token reduction. Not 70%. Honest numbers.
 Plus the only tool that catches Claude going in circles — and learns from it.
+
+## Architecture
+
+Full interactive architecture explorer with 4 tabbed diagrams and plugin component cards:
+
+**[docs/architecture/](docs/architecture/)** — auto-generated from the codebase. Run `python docs/architecture/generate.py` to regenerate.
 
 ## Contributing
 
