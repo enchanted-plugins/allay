@@ -1,0 +1,22 @@
+graph LR
+    subgraph context_guard["context-guard"]
+        context_guard_h0_trigger["PostToolUse<br/>Bash | Read | Write | Edit | MultiEdit | Glob | Grep"]
+        context_guard_h0_script["detect-drift.sh<br/><small>timeout: 15s</small>"]
+        context_guard_h0_trigger --> context_guard_h0_script
+    end
+    subgraph state_keeper["state-keeper"]
+        state_keeper_h0_trigger["PreCompact<br/>*"]
+        state_keeper_h0_script["save-checkpoint.sh<br/><small>timeout: 30s</small>"]
+        state_keeper_h0_trigger --> state_keeper_h0_script
+    end
+    subgraph token_saver["token-saver"]
+        token_saver_h0_trigger["PreToolUse<br/>Bash"]
+        token_saver_h0_script["compress-bash.sh<br/><small>timeout: 10s</small>"]
+        token_saver_h0_trigger --> token_saver_h0_script
+        token_saver_h1_trigger["PreToolUse<br/>Read"]
+        token_saver_h1_script["block-duplicates.sh<br/><small>timeout: 10s</small>"]
+        token_saver_h1_trigger --> token_saver_h1_script
+        token_saver_h2_trigger["PostToolUse<br/>Bash | Read | Write | Edit | MultiEdit | Glob | Grep"]
+        token_saver_h2_script["age-results.sh<br/><small>timeout: 10s</small>"]
+        token_saver_h2_trigger --> token_saver_h2_script
+    end

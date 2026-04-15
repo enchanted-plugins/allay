@@ -1,0 +1,307 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Allay — Architecture Explorer</title>
+<script src="https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.min.js"></script>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    background: #0d1117;
+    color: #e6edf3;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+    font-size: 14px;
+    line-height: 1.6;
+    padding: 0;
+  }
+  .brand-bar { height: 3px; background: #39d353; }
+  .container { max-width: 1200px; margin: 0 auto; padding: 32px 24px; }
+  h1 { font-size: 32px; margin-bottom: 4px; }
+  h1 span { color: #8b949e; font-size: 14px; font-weight: 400; margin-left: 12px; }
+  .subtitle { color: #484f58; font-size: 12px; margin-bottom: 32px; }
+  h2 {
+    font-size: 18px;
+    margin: 32px 0 16px;
+    padding-bottom: 8px;
+    border-bottom: 1px solid #30363d;
+  }
+  .tabs {
+    display: flex;
+    gap: 4px;
+    margin-bottom: 0;
+    border-bottom: 1px solid #30363d;
+  }
+  .tab {
+    padding: 8px 16px;
+    cursor: pointer;
+    border: 1px solid transparent;
+    border-bottom: none;
+    border-radius: 6px 6px 0 0;
+    color: #8b949e;
+    font-size: 13px;
+    background: transparent;
+    transition: all 0.15s;
+  }
+  .tab:hover { color: #e6edf3; background: #161b22; }
+  .tab.active {
+    color: #e6edf3;
+    background: #161b22;
+    border-color: #30363d;
+    border-bottom-color: #161b22;
+    margin-bottom: -1px;
+  }
+  .diagram-panel {
+    display: none;
+    background: #161b22;
+    border: 1px solid #30363d;
+    border-top: none;
+    border-radius: 0 0 8px 8px;
+    padding: 24px;
+    min-height: 300px;
+    overflow-x: auto;
+  }
+  .diagram-panel.active { display: block; }
+  .mermaid { background: transparent; }
+  .mermaid svg { max-width: 100%; }
+  .plugins-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));
+    gap: 16px;
+    margin-top: 16px;
+  }
+  .plugin-card {
+    background: #161b22;
+    border: 1px solid #30363d;
+    border-radius: 8px;
+    padding: 20px;
+  }
+  .plugin-card h3 {
+    font-size: 16px;
+    margin-bottom: 4px;
+    color: #58a6ff;
+  }
+  .plugin-card .desc {
+    color: #8b949e;
+    font-size: 12px;
+    margin-bottom: 12px;
+  }
+  .section-label {
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: #484f58;
+    margin-top: 12px;
+    margin-bottom: 4px;
+  }
+  .hook {
+    font-size: 12px;
+    padding: 4px 0;
+    border-bottom: 1px solid #21262d;
+  }
+  .phase {
+    display: inline-block;
+    padding: 1px 6px;
+    border-radius: 3px;
+    font-size: 10px;
+    font-weight: 600;
+    background: #1c2333;
+    color: #58a6ff;
+  }
+  .matcher { color: #3fb950; font-size: 11px; }
+  .item { font-size: 12px; padding: 2px 0; }
+  .dim { color: #484f58; }
+  code {
+    background: #1c2333;
+    padding: 1px 5px;
+    border-radius: 3px;
+    font-size: 12px;
+    color: #e6edf3;
+  }
+  .footer {
+    margin-top: 40px;
+    padding-top: 16px;
+    border-top: 1px solid #30363d;
+    font-size: 11px;
+    color: #484f58;
+    display: flex;
+    justify-content: space-between;
+  }
+</style>
+</head>
+<body>
+<div class="brand-bar"></div>
+<div class="container">
+  <h1>Allay <span>Architecture Explorer</span></h1>
+  <div class="subtitle">Auto-generated from codebase — 2026-04-15 04:49 UTC</div>
+
+  <h2>System Diagrams</h2>
+  <div class="tabs">
+    <div class="tab active" onclick="showTab('highlevel')">High Level</div>
+    <div class="tab" onclick="showTab('hooks')">Hook Detail</div>
+    <div class="tab" onclick="showTab('dataflow')">Data Flow</div>
+    <div class="tab" onclick="showTab('lifecycle')">Session Lifecycle</div>
+  </div>
+
+  <div id="panel-highlevel" class="diagram-panel active">
+    <pre class="mermaid">graph TD
+    CC["Claude Code<br/>Tool Calls"]
+    context_guard["context-guard<br/><small>PostToolUse</small>"]
+    CC --> context_guard
+    context_guard_out(["state/metrics.jsonl"])
+    context_guard --> context_guard_out
+    style context_guard fill:#161b22,stroke:#3fb950,color:#e6edf3
+    state_keeper["state-keeper<br/><small>PreCompact</small>"]
+    CC --> state_keeper
+    state_keeper_out(["state/metrics.jsonl"])
+    state_keeper --> state_keeper_out
+    style state_keeper fill:#161b22,stroke:#d29922,color:#e6edf3
+    token_saver["token-saver<br/><small>PostToolUse + PreToolUse</small>"]
+    CC --> token_saver
+    token_saver_out(["state/metrics.jsonl"])
+    token_saver --> token_saver_out
+    style token_saver fill:#161b22,stroke:#bc8cff,color:#e6edf3
+    style CC fill:#0d1117,stroke:#bc8cff,color:#e6edf3</pre>
+  </div>
+  <div id="panel-hooks" class="diagram-panel">
+    <pre class="mermaid">graph LR
+    subgraph context_guard["context-guard"]
+        context_guard_h0_trigger["PostToolUse<br/>Bash | Read | Write | Edit | MultiEdit | Glob | Grep"]
+        context_guard_h0_script["detect-drift.sh<br/><small>timeout: 15s</small>"]
+        context_guard_h0_trigger --> context_guard_h0_script
+    end
+    subgraph state_keeper["state-keeper"]
+        state_keeper_h0_trigger["PreCompact<br/>*"]
+        state_keeper_h0_script["save-checkpoint.sh<br/><small>timeout: 30s</small>"]
+        state_keeper_h0_trigger --> state_keeper_h0_script
+    end
+    subgraph token_saver["token-saver"]
+        token_saver_h0_trigger["PreToolUse<br/>Bash"]
+        token_saver_h0_script["compress-bash.sh<br/><small>timeout: 10s</small>"]
+        token_saver_h0_trigger --> token_saver_h0_script
+        token_saver_h1_trigger["PreToolUse<br/>Read"]
+        token_saver_h1_script["block-duplicates.sh<br/><small>timeout: 10s</small>"]
+        token_saver_h1_trigger --> token_saver_h1_script
+        token_saver_h2_trigger["PostToolUse<br/>Bash | Read | Write | Edit | MultiEdit | Glob | Grep"]
+        token_saver_h2_script["age-results.sh<br/><small>timeout: 10s</small>"]
+        token_saver_h2_trigger --> token_saver_h2_script
+    end</pre>
+  </div>
+  <div id="panel-dataflow" class="diagram-panel">
+    <pre class="mermaid">graph TB
+    subgraph inputs["Tool Calls"]
+        Bash["Bash"]
+        Read["Read"]
+        Write["Write / Edit"]
+        Glob["Glob / Grep"]
+    end
+    context_guard_metrics["context-guard/state/metrics.jsonl<br/><small>turn (token est.)<br/>drift_detected</small>"]
+    Bash --> context_guard_metrics
+    state_keeper_metrics["state-keeper/state/metrics.jsonl<br/><small>checkpoint_saved</small>"]
+    token_saver_metrics["token-saver/state/metrics.jsonl<br/><small>bash_compressed<br/>duplicate_blocked<br/>delta_read<br/>result_aged</small>"]
+    Bash --> token_saver_metrics
+    Read --> token_saver_metrics
+    Bash --> token_saver_metrics
+    report["📊 /allay:report<br/>Aggregates all metrics"]
+    context_guard_metrics --> report
+    state_keeper_metrics --> report
+    token_saver_metrics --> report</pre>
+  </div>
+  <div id="panel-lifecycle" class="diagram-panel">
+    <pre class="mermaid">graph TD
+    start(["Session Start"]) --> turns
+    subgraph turns["Active Session"]
+        t1["Turn N: Tool Call"] --> pre["PreToolUse<br/>token-saver"]
+        pre -->|"compress / dedup / delta"| exec["Tool Executes"]
+        exec --> post["PostToolUse<br/>context-guard"]
+        post -->|"drift detect + token est."| t1
+    end
+    turns -->|"Context full"| compact["⚠️ Compaction"]
+    compact --> precompact["PreCompact<br/>state-keeper"]
+    precompact -->|"checkpoint.md"| wipe["Context Wiped"]
+    wipe --> restore["state-recovery skill<br/>or restorer agent"]
+    restore -->|"Read checkpoint.md"| resume(["Session Continues"])
+
+    style compact fill:#f85149,color:#0d1117
+    style precompact fill:#d29922,color:#0d1117
+    style restore fill:#3fb950,color:#0d1117</pre>
+  </div>
+
+  <h2>Plugin Components</h2>
+  <div class="plugins-grid">
+    
+        <div class="plugin-card">
+          <h3>context-guard</h3>
+          <p class="desc">The eyes of Allay. Drift Alert, Runway, Analytics, and Report.</p>
+          <div class="section-label">Hooks</div>
+          <div class="hook"><span class="phase">PostToolUse</span> <span class="matcher">Bash|Read|Write|Edit|MultiEdit|Glob|Grep</span> → <code>detect-drift.sh</code> <span class="dim">(15s)</span></div>
+          <div class="section-label">Skills</div>
+          <div class="item"><strong>drift-awareness</strong></div><div class="item"><strong>token-awareness</strong></div>
+          <div class="section-label">Agents</div>
+          <div class="item"><strong>allay-analyst</strong> <span class="dim">(haiku, fork)</span></div><div class="item"><strong>allay-forecaster</strong> <span class="dim">(haiku, fork)</span></div>
+          <div class="section-label">Commands</div>
+          <div class="item"><code>allay:analytics</code></div><div class="item"><code>allay:doctor</code></div><div class="item"><code>allay:report</code></div><div class="item"><code>allay:runway</code></div>
+        </div>
+        <div class="plugin-card">
+          <h3>state-keeper</h3>
+          <p class="desc">Preserves Claude Code context across compactions. Auto-restores after compaction.</p>
+          <div class="section-label">Hooks</div>
+          <div class="hook"><span class="phase">PreCompact</span> <span class="matcher">*</span> → <code>save-checkpoint.sh</code> <span class="dim">(30s)</span></div>
+          <div class="section-label">Skills</div>
+          <div class="item"><strong>state-recovery</strong></div>
+          <div class="section-label">Agents</div>
+          <div class="item"><strong>allay-restorer</strong> <span class="dim">(haiku, fork)</span></div>
+          <div class="section-label">Commands</div>
+          <div class="item"><code>allay:checkpoint-show</code></div><div class="item"><code>allay:checkpoint</code></div>
+        </div>
+        <div class="plugin-card">
+          <h3>token-saver</h3>
+          <p class="desc">Reduces token usage via compression, dedup, delta mode, and output efficiency.</p>
+          <div class="section-label">Hooks</div>
+          <div class="hook"><span class="phase">PreToolUse</span> <span class="matcher">Bash</span> → <code>compress-bash.sh</code> <span class="dim">(10s)</span></div><div class="hook"><span class="phase">PreToolUse</span> <span class="matcher">Read</span> → <code>block-duplicates.sh</code> <span class="dim">(10s)</span></div><div class="hook"><span class="phase">PostToolUse</span> <span class="matcher">Bash|Read|Write|Edit|MultiEdit|Glob|Grep</span> → <code>age-results.sh</code> <span class="dim">(10s)</span></div>
+          <div class="section-label">Skills</div>
+          <div class="item"><strong>compression-rules</strong></div><div class="item"><strong>output-efficiency</strong></div>
+          <div class="section-label">Agents</div>
+          <div class="item"><strong>allay-compressor</strong> <span class="dim">(haiku, fork)</span></div>
+          <div class="section-label">Commands</div>
+          <div class="dim">None</div>
+        </div>
+  </div>
+
+  <div class="footer">
+    <span>Generated by docs/architecture/generate.py from plugin.json, hooks.json, SKILL.md, agents/*.md</span>
+    <span>Allay v2.0.0</span>
+  </div>
+</div>
+
+<script>
+  mermaid.initialize({
+    startOnLoad: true,
+    theme: 'dark',
+    themeVariables: {
+      darkMode: true,
+      background: '#161b22',
+      primaryColor: '#1c2333',
+      primaryTextColor: '#e6edf3',
+      primaryBorderColor: '#30363d',
+      lineColor: '#484f58',
+      secondaryColor: '#161b22',
+      tertiaryColor: '#1c2333',
+    }
+  });
+
+  function showTab(id) {
+    document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+    document.querySelectorAll('.diagram-panel').forEach(p => p.classList.remove('active'));
+    event.target.classList.add('active');
+    document.getElementById('panel-' + id).classList.add('active');
+
+    // Re-render mermaid for newly visible panels
+    const panel = document.getElementById('panel-' + id);
+    const pre = panel.querySelector('.mermaid');
+    if (pre && !pre.getAttribute('data-processed')) {
+      mermaid.run({ nodes: [pre] });
+    }
+  }
+</script>
+</body>
+</html>

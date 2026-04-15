@@ -1,0 +1,18 @@
+graph TD
+    CC["Claude Code<br/>Tool Calls"]
+    context_guard["context-guard<br/><small>PostToolUse</small>"]
+    CC --> context_guard
+    context_guard_out(["state/metrics.jsonl"])
+    context_guard --> context_guard_out
+    style context_guard fill:#161b22,stroke:#3fb950,color:#e6edf3
+    state_keeper["state-keeper<br/><small>PreCompact</small>"]
+    CC --> state_keeper
+    state_keeper_out(["state/metrics.jsonl"])
+    state_keeper --> state_keeper_out
+    style state_keeper fill:#161b22,stroke:#d29922,color:#e6edf3
+    token_saver["token-saver<br/><small>PostToolUse + PreToolUse</small>"]
+    CC --> token_saver
+    token_saver_out(["state/metrics.jsonl"])
+    token_saver --> token_saver_out
+    style token_saver fill:#161b22,stroke:#bc8cff,color:#e6edf3
+    style CC fill:#0d1117,stroke:#bc8cff,color:#e6edf3

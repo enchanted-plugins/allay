@@ -1,0 +1,18 @@
+graph TB
+    subgraph inputs["Tool Calls"]
+        Bash["Bash"]
+        Read["Read"]
+        Write["Write / Edit"]
+        Glob["Glob / Grep"]
+    end
+    context_guard_metrics["context-guard/state/metrics.jsonl<br/><small>turn (token est.)<br/>drift_detected</small>"]
+    Bash --> context_guard_metrics
+    state_keeper_metrics["state-keeper/state/metrics.jsonl<br/><small>checkpoint_saved</small>"]
+    token_saver_metrics["token-saver/state/metrics.jsonl<br/><small>bash_compressed<br/>duplicate_blocked<br/>delta_read<br/>result_aged</small>"]
+    Bash --> token_saver_metrics
+    Read --> token_saver_metrics
+    Bash --> token_saver_metrics
+    report["📊 /allay:report<br/>Aggregates all metrics"]
+    context_guard_metrics --> report
+    state_keeper_metrics --> report
+    token_saver_metrics --> report
