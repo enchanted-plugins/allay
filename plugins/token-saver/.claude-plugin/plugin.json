@@ -9,5 +9,9 @@
     "./skills/compression-rules/",
     "./skills/output-efficiency/"
   ],
-  "agents": "./agents/"
+  "agents": "./agents/",
+  "dependencies": [
+    "allay-context-guard",
+    "allay-state-keeper"
+  ]
 }

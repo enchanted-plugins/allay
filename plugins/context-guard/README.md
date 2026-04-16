@@ -4,6 +4,17 @@
 
 **Hook type:** PostToolUse — fires after every tool call.
 
+## Install
+
+Part of the [Allay](../..) bundle — **all 3 plugins install together**. `context-guard` surfaces drift and runway using signals that only exist because `state-keeper` checkpoints before compaction and `token-saver` compresses outputs; installing it alone leaves the dashboard with nothing to report. The manifest lists the other two as dependencies.
+
+```
+/plugin marketplace add enchanted-plugins/allay
+/plugin install allay-context-guard@allay
+```
+
+Claude Code resolves the dependency chain and installs all 3.
+
 ## Components
 
 | Type | Name | Description |

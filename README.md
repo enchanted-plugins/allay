@@ -208,29 +208,24 @@ Persisted to `learnings.json` after each report.
 
 ## Install
 
+Allay is a **bundle** — all 3 plugins install together. They cooperate at runtime (context-guard watches drift/tokens, state-keeper checkpoints before compaction, token-saver compresses to extend runway), so every plugin lists the other two as dependencies. Claude Code resolves the whole set from one install.
+
+**In Claude Code** (recommended):
+
 ```
 /plugin marketplace add enchanted-plugins/allay
+/plugin install allay-context-guard@allay
 ```
 
-Start with context-guard. It's the one you'll feel:
+The second command installs all 3 via auto-resolved dependencies. Any of the 3 names works (`allay-state-keeper@allay`, `allay-token-saver@allay`) — they're peers. `context-guard` is the natural entry point since it's the one you'll feel first. Verify with `/plugin list` — you should see all 3.
 
-```
-/plugin install context-guard@allay
-```
-
-Full suite:
-
-```
-/plugin install state-keeper@allay
-/plugin install token-saver@allay
-/plugin install context-guard@allay
-```
-
-Or manually:
+**Via shell** (also installs `shared/*.sh` locally so hooks work offline):
 
 ```bash
 bash <(curl -s https://raw.githubusercontent.com/enchanted-plugins/allay/main/install.sh)
 ```
+
+> **Why no à la carte?** Installing only `context-guard` would surface drift alerts but leave compactions unchecked; installing only `token-saver` would compress outputs but give you no visibility into what it saved. The platform is the product.
 
 ## 3 Plugins, 4 Agents, 7 Algorithms
 

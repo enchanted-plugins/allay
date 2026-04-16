@@ -10,5 +10,9 @@
     "./commands/checkpoint-show.md"
   ],
   "skills": ["./skills/state-recovery/"],
-  "agents": "./agents/"
+  "agents": "./agents/",
+  "dependencies": [
+    "allay-context-guard",
+    "allay-token-saver"
+  ]
 }

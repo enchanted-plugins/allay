@@ -2,6 +2,17 @@
 
 **Hook type:** PreToolUse + PostToolUse — fires before and after tool execution.
 
+## Install
+
+Part of the [Allay](../..) bundle — **all 3 plugins install together**. `token-saver`'s compression metrics feed `context-guard`'s savings report, and the tokens it reclaims extend the runway that `state-keeper` checkpoints defend across compactions; installing it alone hides the wins and leaves compactions uncheckpointed. The manifest lists the other two as dependencies.
+
+```
+/plugin marketplace add enchanted-plugins/allay
+/plugin install allay-token-saver@allay
+```
+
+Claude Code resolves the dependency chain and installs all 3.
+
 ## Components
 
 | Type | Name | Description |

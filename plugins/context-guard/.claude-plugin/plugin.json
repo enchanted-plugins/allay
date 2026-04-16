@@ -15,5 +15,9 @@
     "./skills/drift-awareness/",
     "./skills/token-awareness/"
   ],
-  "agents": "./agents/"
+  "agents": "./agents/",
+  "dependencies": [
+    "allay-state-keeper",
+    "allay-token-saver"
+  ]
 }
