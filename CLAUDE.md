@@ -16,7 +16,7 @@ See `./plugins/<name>/hooks/hooks.json` for matchers. Agents in `./plugins/<name
 
 ## Algorithms
 
-A1 Markov Drift Detection · A2 Linear Runway Forecasting · A3 Shannon Compression · A4 Atomic State Serialization · A5 Content-Addressable Dedup · A6 Content-Addressable Delta · A7 Bayesian Strategy Accumulation. Derivations: `docs/science/README.md`.
+A1 Markov Drift Detection · A2 Linear Runway Forecasting · A3 Shannon Compression · A4 Atomic State Serialization · A5 Content-Addressable Dedup · A6 Content-Addressable Delta · A7 Bayesian Strategy Accumulation. Derivations in `README.md` § *The Science Behind Allay*.
 
 ## Behavioral contracts
 
@@ -62,7 +62,7 @@ Never write these paths directly — they're owned by hooks and agents.
 
 ## Agent tiers
 
-All 4 agents are Haiku (validator tier per `flux/docs/brand-guide.md`): `analyst`, `forecaster`, `compressor`, `restorer`. Each has an explicit output contract in its `agents/*.md`.
+All 4 agents are Haiku (validator tier — Orchestrator/Opus, Executor/Sonnet, Validator/Haiku is the @enchanted-plugins convention): `analyst`, `forecaster`, `compressor`, `restorer`. Each has an explicit output contract in its `agents/*.md`.
 
 ## Terse output modes
 
