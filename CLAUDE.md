@@ -1,70 +1,76 @@
-# Allay — What You Need To Know
+# Allay — Agent Contract
 
-You have Allay installed. It watches your context budget, detects when you're spinning in circles, and preserves state before compaction so work survives.
+Audience: Claude. Allay watches context health — compresses tool output, detects drift, forecasts runway, checkpoints before compaction.
 
-## What's happening behind the scenes
+## Lifecycle
 
-Every time you use a tool:
-1. **token-saver** (PreToolUse) compresses verbose commands, blocks duplicate reads, and returns diffs on re-reads (A3, A5, A6)
-2. **context-guard** (PostToolUse) estimates tokens per turn, detects drift patterns, and forecasts runway (A1, A2)
+| Plugin | Hook | Purpose |
+|--------|------|---------|
+| token-saver | PreToolUse (Bash) | Compress verbose output (A3) |
+| token-saver | PreToolUse (Read) | Block duplicate reads, return delta (A5, A6) |
+| token-saver | PostToolUse | Age old tool results |
+| context-guard | PostToolUse | Estimate tokens, detect drift (A1, A2) |
+| state-keeper | PreCompact | Write atomic checkpoint (A4) |
 
-Before compaction:
-3. **state-keeper** (PreCompact) writes an atomic checkpoint so context survives the wipe (A4)
+See `./plugins/<name>/hooks/hooks.json` for matchers. Agents in `./plugins/<name>/agents/`.
 
-Across sessions:
-4. **Bayesian Strategy Accumulation** (A7) updates `learnings.json` with what worked — dormant rules, chronic drift, velocity drift.
+## Algorithms
 
-## Drift patterns — what they mean
+A1 Markov Drift Detection · A2 Linear Runway Forecasting · A3 Shannon Compression · A4 Atomic State Serialization · A5 Content-Addressable Dedup · A6 Content-Addressable Delta · A7 Bayesian Strategy Accumulation. Derivations: `docs/science/README.md`.
 
-| Pattern | Meaning | Your action |
-|---------|---------|-------------|
-| READ_LOOP | Same file read 3+ times without edits | Reframe the problem — you're stuck re-reading |
-| EDIT_REVERT | File edited then reverted within a short window | Step back; the fix isn't working |
-| TEST_FAIL_LOOP | Same test failing repeatedly | Change approach, don't retry the same fix |
+## Behavioral contracts
 
-5-turn cooldown between alerts. Thresholds via `ALLAY_DRIFT_*` env vars.
+Markers: **[H]** hook-enforced (deterministic) · **[A]** advisory (relies on your adherence).
 
-## Runway forecast — what it means
+1. **[H] IMPORTANT — Respect the delta.** When token-saver returns a unified diff instead of full file contents, work from the diff. Do not re-invoke Read to get the full file; the block was intentional (A5/A6).
+2. **[H] Respect duplicate blocks.** If a Read is blocked as duplicate, use your prior read. Do not obfuscate the path to bypass the TTL.
+3. **[A] YOU MUST acknowledge `[Allay]` stderr.** Name the pattern (read loop / edit-revert / fail loop) or the runway alert, then change approach. Silence after a drift alert is a contract violation.
+4. **[A] Checkpoint when runway < 8.** Offer `/allay:checkpoint <short note>` with the current sub-task state before compaction eats the context.
+5. **[A] Honest numbers.** When producing `/allay:report`, surface only what `metrics.jsonl` contains. Never infer, smooth, or round up savings.
+6. **[A] ESCALATE on stale metrics.** If `metrics.jsonl` is empty or malformed, report "no data" — do not fabricate a report shell.
+7. **[A] ESCALATE on conflicting drift + runway.** If the session shows drift AND runway < 5, pause and summarize both before the developer loses context.
 
-| Runway | Meaning | Your action |
-|--------|---------|-------------|
-| > 20 turns | Plenty of headroom | Work normally |
-| 8–20 turns | Getting tight | Wrap up the current sub-task cleanly |
-| < 8 turns | Near compaction | Run `/allay:checkpoint` with key context before continuing |
+## Response tables
 
-Confidence label (HIGH/MEDIUM/LOW) comes from coefficient of variation over the sliding window.
+### Drift patterns (A1)
+| Pattern | Trigger | Action |
+|---------|---------|--------|
+| READ_LOOP | same file read ≥ 3× without edits | Reframe the problem; stop re-reading |
+| EDIT_REVERT | file edited then reverted to prior hash | Step back; the fix is not landing |
+| TEST_FAIL_LOOP | same test fails ≥ 3× | Change approach; do not re-run |
 
-## What you MUST do
+5-turn cooldown. Thresholds: `ALLAY_DRIFT_READ_THRESHOLD`, `ALLAY_DRIFT_FAIL_THRESHOLD`.
 
-1. **When you see `[Allay]` drift alert in stderr**: Acknowledge it. Name the pattern (read loop / edit-revert / fail loop) and change approach. Don't keep doing the thing that triggered it.
+### Runway (A2)
+| Runway | Confidence source | Action |
+|--------|-------------------|--------|
+| > 20 turns | velocity window stable | Work normally |
+| 8–20 turns | — | Wrap current sub-task cleanly |
+| < 8 turns | — | Run `/allay:checkpoint` before continuing |
 
-2. **When runway drops below 8 turns**: Tell the developer. Offer to save a checkpoint via `/allay:checkpoint` with a short note of current state before the context wipes.
+## State paths
 
-3. **When token-saver returns a delta instead of full file contents**: Use the diff — don't demand the full file. That's the whole point of A6.
+```
+plugins/token-saver/state/metrics.jsonl       (append-only)
+plugins/context-guard/state/metrics.jsonl     (append-only)
+plugins/context-guard/state/learnings.json    (mutable, A7 EMA)
+plugins/state-keeper/state/checkpoint.md      (mutable, atomic rename)
+plugins/state-keeper/state/remember.md        (mutable, user-flagged)
+```
 
-4. **When a duplicate read is blocked**: Don't retry with a different approach to bypass it. The file is unchanged; use what you already read.
+Never write these paths directly — they're owned by hooks and agents.
 
-5. **After compaction / session restore**: Read `plugins/state-keeper/state/checkpoint.md` and `plugins/state-keeper/state/remember.md`. Brief the developer on what was happening before the wipe.
+## Agent tiers
 
-6. **When the developer asks "where did my tokens go"**: Read `plugins/token-saver/state/metrics.jsonl` and `plugins/context-guard/state/metrics.jsonl`. Give a per-tool breakdown, not a file dump.
-
-## Commands the developer can use
-
-- `/allay:report` — full session dashboard (runway → drift → savings → learnings)
-- `/allay:runway` — quick turns-until-compaction estimate with 95% CI
-- `/allay:analytics` — per-tool token consumption breakdown
-- `/allay:checkpoint [text]` — save user-flagged context that survives compaction
-- `/allay:checkpoint-show` — display the most recent automatic checkpoint
-- `/allay:doctor` — diagnostic self-check for all plugins
+All 4 agents are Haiku (validator tier per `flux/docs/brand-guide.md`): `analyst`, `forecaster`, `compressor`, `restorer`. Each has an explicit output contract in its `agents/*.md`.
 
 ## Terse output modes
 
-Allay has four output modes: `off`, `lite`, `full`, `ultra`. Code stays verbose — only prose gets lean. Match your response style to the current mode. If the developer sets `ultra`, drop the narration.
+Allay ships an output-efficiency skill: `off`, `lite`, `full`, `ultra`. Match your response style to the current mode. `ultra` → drop narration. Code stays verbose regardless.
 
-## What NOT to do
+## Anti-patterns
 
-- Don't suppress or dismiss drift alerts — they exist because you were doing the thing
-- Don't modify Allay state files (metrics.jsonl, learnings.json, checkpoint.md)
-- Don't re-read a file token-saver already returned — use the delta or cached copy
-- Don't prefix commands with `FULL:` to bypass compression unless the developer asked for raw output
-- Don't inflate the savings numbers in `/allay:report` — Allay's honest-numbers contract is the whole point
+- **Prefix bypass.** Using `FULL:` to dodge A3 compression when the developer did not request raw output. The bypass exists for rare debugging, not default behavior.
+- **Silent savings inflation.** Reporting `/allay:report` totals that don't match `metrics.jsonl` line counts. Breaks the honest-numbers contract, which is the product.
+- **Checkpoint drift.** Writing to `checkpoint.md` outside the PreCompact hook. The atomic rename protocol (A4) is the only safe write path.
+- **Drift-alert hand-wave.** Acknowledging the alert then continuing the same action. The cooldown exists so repeated alerts mean something.
