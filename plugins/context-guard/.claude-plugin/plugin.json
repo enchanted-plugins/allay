@@ -2,9 +2,18 @@
   "name": "allay-context-guard",
   "description": "The eyes of Allay. Drift Alert, Runway, Analytics, and Report.",
   "version": "2.0.0",
-  "author": { "name": "Allay" },
+  "author": {
+    "name": "Allay"
+  },
   "license": "MIT",
-  "keywords": ["drift", "runway", "context", "monitoring", "alerts", "analytics"],
+  "keywords": [
+    "drift",
+    "runway",
+    "context",
+    "monitoring",
+    "alerts",
+    "analytics"
+  ],
   "commands": [
     "./commands/report.md",
     "./commands/runway.md",
@@ -15,9 +24,5 @@
     "./skills/drift-awareness/",
     "./skills/token-awareness/"
   ],
-  "agents": "./agents/",
-  "dependencies": [
-    "allay-state-keeper",
-    "allay-token-saver"
-  ]
+  "agents": "./agents/"
 }

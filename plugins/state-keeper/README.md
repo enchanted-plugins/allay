@@ -4,14 +4,14 @@
 
 ## Install
 
-Part of the [Allay](../..) bundle — **all 3 plugins install together**. `state-keeper` writes checkpoints that `context-guard`'s runway forecast reads to recalibrate after compaction, and `token-saver`'s compression extends the turns before compaction fires in the first place; installing it alone leaves checkpoints unread and compactions needlessly frequent. The manifest lists the other two as dependencies.
+Part of the [Allay](../..) bundle. The simplest install is the `full` meta-plugin, which pulls in all 3 Allay plugins via dependency resolution:
 
 ```
 /plugin marketplace add enchanted-plugins/allay
-/plugin install allay-state-keeper@allay
+/plugin install full@allay
 ```
 
-Claude Code resolves the dependency chain and installs all 3.
+To install this plugin on its own: `/plugin install allay-state-keeper@allay`. `state-keeper` writes checkpoints that `context-guard`'s runway forecast reads to recalibrate after compaction, and `token-saver`'s compression extends the turns before compaction fires in the first place — so on its own checkpoints go unread and compactions fire more often.
 
 ## Components
 

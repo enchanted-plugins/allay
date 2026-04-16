@@ -1,5 +1,13 @@
 # Allay
 
+<p align="center">
+  <a href="LICENSE"><img alt="License: MIT" src="https://img.shields.io/badge/License-MIT-3fb950?style=for-the-badge"></a>
+  <img alt="3 plugins" src="https://img.shields.io/badge/Plugins-3-bc8cff?style=for-the-badge">
+  <img alt="9 algorithms" src="https://img.shields.io/badge/Algorithms-9-58a6ff?style=for-the-badge">
+  <img alt="4 agents" src="https://img.shields.io/badge/Agents-4-d29922?style=for-the-badge">
+  <img alt="Honest numbers contract" src="https://img.shields.io/badge/Honest-Numbers-f0883e?style=for-the-badge">
+</p>
+
 > An @enchanted-plugins product — algorithm-driven, agent-managed, self-learning.
 
 The context health platform that learns what wastes your tokens — and stops it.

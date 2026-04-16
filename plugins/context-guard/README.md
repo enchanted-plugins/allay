@@ -6,14 +6,14 @@
 
 ## Install
 
-Part of the [Allay](../..) bundle — **all 3 plugins install together**. `context-guard` surfaces drift and runway using signals that only exist because `state-keeper` checkpoints before compaction and `token-saver` compresses outputs; installing it alone leaves the dashboard with nothing to report. The manifest lists the other two as dependencies.
+Part of the [Allay](../..) bundle. The simplest install is the `full` meta-plugin, which pulls in all 3 Allay plugins via dependency resolution:
 
 ```
 /plugin marketplace add enchanted-plugins/allay
-/plugin install allay-context-guard@allay
+/plugin install full@allay
 ```
 
-Claude Code resolves the dependency chain and installs all 3.
+To install this plugin on its own: `/plugin install allay-context-guard@allay`. `context-guard` surfaces drift and runway using signals that only exist because `state-keeper` checkpoints before compaction and `token-saver` compresses outputs — so on its own the dashboard has thin data to report.
 
 ## Components
 

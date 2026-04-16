@@ -2,16 +2,21 @@
   "name": "allay-token-saver",
   "description": "Reduces token usage via compression, dedup, delta mode, and output efficiency.",
   "version": "2.0.0",
-  "author": { "name": "Allay" },
+  "author": {
+    "name": "Allay"
+  },
   "license": "MIT",
-  "keywords": ["tokens", "compression", "dedup", "optimization", "delta", "output-efficiency"],
+  "keywords": [
+    "tokens",
+    "compression",
+    "dedup",
+    "optimization",
+    "delta",
+    "output-efficiency"
+  ],
   "skills": [
     "./skills/compression-rules/",
     "./skills/output-efficiency/"
   ],
-  "agents": "./agents/",
-  "dependencies": [
-    "allay-context-guard",
-    "allay-state-keeper"
-  ]
+  "agents": "./agents/"
 }

@@ -9,6 +9,12 @@
   },
   "plugins": [
     {
+      "name": "full",
+      "source": "./plugins/full",
+      "description": "Meta-plugin. One install pulls in all 3 Allay plugins via dependency resolution.",
+      "category": "meta"
+    },
+    {
       "name": "allay-state-keeper",
       "source": "./plugins/state-keeper",
       "description": "Preserves Claude Code context across compactions. Writes checkpoint before compaction wipes context. Auto-restores after compaction.",

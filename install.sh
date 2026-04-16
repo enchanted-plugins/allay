@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
-# Allay installer. The 3 plugins are a coordinated bundle — they install
-# together or not at all (see .claude-plugin/plugin.json → dependencies).
+# Allay installer. The 3 plugins are a coordinated bundle; the `full`
+# meta-plugin pulls them all in via one dependency-resolution pass.
 set -euo pipefail
 
 REPO="https://github.com/enchanted-plugins/allay"
@@ -30,24 +30,20 @@ ok "Hook scripts marked executable"
 cat <<'EOF'
 
 ─────────────────────────────────────────────────────────────────────────
-  Allay is a bundle. The 3 plugins cooperate at runtime —
-  context-guard monitors drift and token usage, state-keeper preserves
-  context across compactions, and token-saver cuts the tokens you
-  spend to get there. Installing only one leaves the others with no
-  signal or no savings, so every plugin.json lists the other two as
-  dependencies and Claude Code pulls them in together.
+  Allay ships as 3 plugins cooperating across PreToolUse / PostToolUse /
+  PreCompact. The `full` meta-plugin lists all three as dependencies so
+  one install pulls in the whole platform.
 ─────────────────────────────────────────────────────────────────────────
 
   Finish in Claude Code with TWO commands:
 
     /plugin marketplace add enchanted-plugins/allay
-    /plugin install allay-context-guard@allay
+    /plugin install full@allay
 
-  The second command installs all 3 plugins via dependency resolution.
-  (Any of the 3 names works — they're peers. context-guard is just the
-  natural entry point since it's the one you'll feel first.)
+  That installs all 3 plugins via dependency resolution. To cherry-pick
+  a single plugin instead, use e.g. `/plugin install allay-context-guard@allay`.
 
   Verify with:   /plugin list
-  Expected:      3 plugins installed under the allay marketplace.
+  Expected:      full + 3 plugins installed under the allay marketplace.
 
 EOF

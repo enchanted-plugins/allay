@@ -2,17 +2,23 @@
   "name": "allay-state-keeper",
   "description": "Preserves Claude Code context across compactions. Auto-restores after compaction.",
   "version": "2.0.0",
-  "author": { "name": "Allay" },
+  "author": {
+    "name": "Allay"
+  },
   "license": "MIT",
-  "keywords": ["compaction", "state", "checkpoint", "context", "restore"],
+  "keywords": [
+    "compaction",
+    "state",
+    "checkpoint",
+    "context",
+    "restore"
+  ],
   "commands": [
     "./commands/checkpoint.md",
     "./commands/checkpoint-show.md"
   ],
-  "skills": ["./skills/state-recovery/"],
-  "agents": "./agents/",
-  "dependencies": [
-    "allay-context-guard",
-    "allay-token-saver"
-  ]
+  "skills": [
+    "./skills/state-recovery/"
+  ],
+  "agents": "./agents/"
 }
