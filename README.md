@@ -4,7 +4,7 @@
 
 The context health platform that learns what wastes your tokens — and stops it.
 
-**3 plugins. 7 algorithms. 4 agents. Honest numbers.**
+**3 plugins. 9 algorithms. 4 agents. Honest numbers.**
 
 > 40 minutes into a session, Allay told me Claude had been editing and reverting
 > the same file for 12 minutes. I didn't notice. It did.
@@ -18,7 +18,7 @@ The context health platform that learns what wastes your tokens — and stops it
 - [Session Lifecycle](#session-lifecycle)
 - [The Science Behind Allay](#the-science-behind-allay)
 - [Install](#install)
-- [3 Plugins, 4 Agents, 7 Algorithms](#3-plugins-4-agents-7-algorithms)
+- [3 Plugins, 4 Agents, 9 Algorithms](#3-plugins-4-agents-9-algorithms)
 - [What You Get Per Session](#what-you-get-per-session)
 - [Commands](#commands)
 - [Compression Rules (15)](#compression-rules-15)
@@ -158,7 +158,7 @@ Every tool call flows through the same pipeline. When context fills up, state-ke
 
 ## The Science Behind Allay
 
-Seven named algorithms. Each one referenced in code, agents, and reports.
+Nine named algorithms. Each one referenced in code, agents, and reports.
 
 ### A1. Markov Drift Detection
 
@@ -224,20 +224,64 @@ $$r_{new} = \alpha \cdot s_{current} + (1 - \alpha) \cdot r_{prior}, \quad \alph
 Detects dormant rules, chronic drift patterns, and velocity drift.
 Persisted to `learnings.json` after each report.
 
+### A8. Skill-Scoped Attribution
+
+Every tool call is attributed to the currently-active skill (or `manual`
+if none is registered). Skills register a scope at entry, unregister at exit;
+the stack supports nesting so a parent skill that invokes a child skill still
+has correct parent/child lineage on every event.
+
+$$\text{attr}(c) = \begin{cases} s_{\text{top}} & \exists\, s \in S : \text{alive}(s.\text{pid}) \land (t - s.\text{start}) < \text{TTL} \\ \texttt{"manual"} & \text{otherwise} \end{cases}$$
+
+Where $S$ is the stack of active skills (LIFO), $s_{\text{top}}$ is the most
+recent, and $\text{TTL} = 3600\text{s}$ (configurable via `ALLAY_SKILL_TTL`).
+Scopes are keyed by 16-hex-char invocation ids — not PIDs — so entries survive
+PID reuse (systemd `InvocationID` pattern). Eviction on every read: stale
+entries (dead PID or expired TTL) are purged before the "current" scope is returned.
+
+Emitted as `skill-metrics.jsonl` alongside `metrics.jsonl`. `/allay:analytics`
+surfaces the per-skill breakdown.
+
+### A9. Worktree Session Graph
+
+Concurrent Claude Code sessions across multiple git worktrees of the same repo
+are unified into one view by the root-commit hash:
+
+$$\text{repo\_id} = \text{sha256}(c_0)_{[:12]}, \quad c_0 = \texttt{git rev-list --max-parents=0 HEAD}$$
+
+The root commit is stable across clones, forks, renames, and worktree paths —
+basename-of-toplevel is not. Cross-worktree events land in
+`$XDG\_STATE\_HOME/allay/\langle repo\_id\rangle/`, sharded per-PID
+(`skill-metrics-global.\langle pid\rangle.jsonl`) to avoid concurrent-append
+interleaving on filesystems without atomicity guarantees (Windows, NFS).
+Readers glob all shards and merge by `ts`:
+
+$$\text{unified\_session} = \bigcup_{w \in W} \text{shards}(w), \quad W = \text{worktrees}(\text{repo\_id})$$
+
+`/allay:report` renders a WORKTREE OVERVIEW section when ≥ 2 worktrees have
+written. `/allay:report --global` forces the unified view across every session
+recorded in the global dir.
+
+Learnings (A7) also migrate to `$XDG_DATA_HOME/allay/<repo_id>/learnings.json` —
+the data dir per XDG spec — so cross-session accumulation survives cache wipes
+and spans every worktree without symlinks.
+
 ---
 
 ## Install
 
-Allay is a **bundle** — all 3 plugins install together. They cooperate at runtime (context-guard watches drift/tokens, state-keeper checkpoints before compaction, token-saver compresses to extend runway), so every plugin lists the other two as dependencies. Claude Code resolves the whole set from one install.
+Allay ships as 3 plugins cooperating across PreToolUse / PostToolUse / PreCompact. One meta-plugin — `full` — lists all three as dependencies, so a single install pulls in the whole platform.
 
 **In Claude Code** (recommended):
 
 ```
 /plugin marketplace add enchanted-plugins/allay
-/plugin install allay-context-guard@allay
+/plugin install full@allay
 ```
 
-The second command installs all 3 via auto-resolved dependencies. Any of the 3 names works (`allay-state-keeper@allay`, `allay-token-saver@allay`) — they're peers. `context-guard` is the natural entry point since it's the one you'll feel first. Verify with `/plugin list` — you should see all 3.
+Claude Code resolves the dependency list and installs all 3 plugins. Verify with `/plugin list`.
+
+**Want to cherry-pick?** Individual plugins are still installable by name — e.g. `/plugin install allay-context-guard@allay` if you only want the drift/runway dashboard. The three lifecycle phases are designed to cooperate, though, so `full@allay` is the path we recommend.
 
 **Via shell** (also installs `shared/*.sh` locally so hooks work offline):
 
@@ -245,16 +289,14 @@ The second command installs all 3 via auto-resolved dependencies. Any of the 3 n
 bash <(curl -s https://raw.githubusercontent.com/enchanted-plugins/allay/main/install.sh)
 ```
 
-> **Why no à la carte?** Installing only `context-guard` would surface drift alerts but leave compactions unchecked; installing only `token-saver` would compress outputs but give you no visibility into what it saved. The platform is the product.
-
-## 3 Plugins, 4 Agents, 7 Algorithms
+## 3 Plugins, 4 Agents, 9 Algorithms
 
 | Plugin | Hook | Command | Algorithms |
 |--------|------|---------|------------|
 | state-keeper | PreCompact | `/allay:checkpoint` | A4 |
 | token-saver | PreToolUse + PostToolUse | — | A3, A5, A6 |
-| context-guard | PostToolUse | `/allay:report` | A1, A2 |
-| shared | — | — | A7 |
+| context-guard | PostToolUse | `/allay:report` | A1, A2, A8 |
+| shared | — | — | A7, A9 |
 
 | Agent | Model | Plugin | What |
 |-------|-------|--------|------|
@@ -316,17 +358,25 @@ token-saver/state/
 └── metrics.jsonl        # bash_compressed, duplicate_blocked, delta_read events
 
 context-guard/state/
-├── metrics.jsonl        # turn (token est.), drift_detected events
-└── learnings.json       # Accumulated strategy rates across sessions (A7)
+├── metrics.jsonl        # turn events — now include "skill" field (A8)
+├── skill-metrics.jsonl  # A8 — rich per-skill events (only when a skill is active)
+├── active-skills.json   # A8 — live scope stack (invocation-id keyed)
+└── .session             # A9 — per-worktree session id (gitignored)
+
+$XDG_STATE_HOME/allay/<repo_id>/       # A9 — cross-worktree global
+└── skill-metrics-global.<pid>.jsonl   # per-PID shard; readers glob + merge
+
+$XDG_DATA_HOME/allay/<repo_id>/        # A9 — long-lived learnings
+└── learnings.json                     # A7 strategy rates; migrated from local
 ```
 
 ## Commands
 
 | Command | Plugin | What |
 |---------|--------|------|
-| `/allay:report` | context-guard | Full session dashboard (Runway > Drift > Savings > Learnings) |
+| `/allay:report` | context-guard | Full session dashboard. `--global` for unified cross-worktree view (A9). |
 | `/allay:runway` | context-guard | Quick turns-until-compaction check |
-| `/allay:analytics` | context-guard | Per-tool token consumption breakdown |
+| `/allay:analytics` | context-guard | Per-tool + per-skill token breakdown (A8) |
 | `/allay:doctor` | context-guard | Diagnostic self-check for all plugins |
 | `/allay:checkpoint [text]` | state-keeper | Save context that survives compaction |
 | `/allay:checkpoint-show` | state-keeper | Display most recent automatic checkpoint |
@@ -362,7 +412,8 @@ Bypass: prefix with `FULL:` to skip compression.
 | Output reduction | 4 modes | 65% prose cut | — | — | — |
 | Input compression | 15 rules | — | 18 strategies | — | — |
 | Delta mode | diff on re-read | — | — | — | delta mode |
-| Per-tool analytics | /allay:analytics | — | — | per-tool stats | waste dashboard |
+| Per-skill + per-tool analytics | /allay:analytics (A8) | — | — | per-tool only | waste dashboard |
+| Cross-worktree unified view | /allay:report --global (A9) | — | — | — | — |
 | Tool result aging | age-based alerts | — | 3-tier stubbing | — | — |
 | Savings proof | /allay:report | — | session report | ctx_stats | quality score |
 | Compaction survival | checkpoint.md | — | team state | SQLite | checkpoints |

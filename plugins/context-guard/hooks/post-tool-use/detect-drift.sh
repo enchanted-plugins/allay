@@ -22,6 +22,11 @@ source "${SHARED_DIR}/constants.sh"
 source "${SHARED_DIR}/sanitize.sh"
 # shellcheck source=../../../../shared/metrics.sh
 source "${SHARED_DIR}/metrics.sh"
+# A9 — resolve repo_id, worktree, session_id, global XDG dirs.
+# Sourced (not invoked) so exports propagate into this shell.
+export ALLAY_PLUGIN_STATE_DIR="${PLUGIN_ROOT}/state"
+# shellcheck source=../../../../shared/scripts/session-init.sh
+source "${SHARED_DIR}/scripts/session-init.sh" || true
 
 # ── Read hook input from stdin ──
 HOOK_INPUT=$(cat)
@@ -41,6 +46,29 @@ fi
 
 # ── Session hash (spec rule #2) ──
 SESSION_HASH=$(md5sum "${HOOK_TRANSCRIPT_PATH}" 2>/dev/null | cut -c1-8 || echo "fallback-$$")
+
+# ── A8 — Skill-Scoped Attribution ──
+# Resolve the currently-active skill scope (or "manual" if none).
+# current-env returns key=value lines we consume via a subshell parse.
+ACTIVE_SKILL="manual"
+ACTIVE_PLUGIN=""
+ACTIVE_SCOPE_ID=""
+ACTIVE_SCOPE_PARENT=""
+ACTIVE_SCOPE_DEPTH="0"
+SKILL_SCOPE_SCRIPT="${SHARED_DIR}/scripts/skill-scope.sh"
+if [[ -x "$SKILL_SCOPE_SCRIPT" ]] || [[ -f "$SKILL_SCOPE_SCRIPT" ]]; then
+  while IFS='=' read -r _k _v; do
+    _v="${_v%$'\r'}"  # defensive: strip CR if any producer leaked it
+    case "$_k" in
+      ALLAY_SCOPE_SKILL)  ACTIVE_SKILL="${_v:-manual}" ;;
+      ALLAY_SCOPE_PLUGIN) ACTIVE_PLUGIN="$_v" ;;
+      ALLAY_SCOPE_ID)     ACTIVE_SCOPE_ID="$_v" ;;
+      ALLAY_SCOPE_PARENT) ACTIVE_SCOPE_PARENT="$_v" ;;
+      ALLAY_SCOPE_DEPTH)  ACTIVE_SCOPE_DEPTH="${_v:-0}" ;;
+    esac
+  done < <(bash "$SKILL_SCOPE_SCRIPT" current-env 2>/dev/null || true)
+fi
+[[ -z "$ACTIVE_SKILL" ]] && ACTIVE_SKILL="manual"
 
 # ── Session cache and cooldown files ──
 CACHE_FILE="/tmp/allay-drift-${SESSION_HASH}.jsonl"
@@ -128,9 +156,60 @@ TURN_METRIC=$(jq -cn \
   --arg tool "$TOOL_NAME" \
   --argjson tokens_est "$EST_TOKENS" \
   --argjson turn "$TURN" \
-  '{event:$event, ts:$ts, tool:$tool, tokens_est:$tokens_est, turn:$turn}')
+  --arg skill "$ACTIVE_SKILL" \
+  '{event:$event, ts:$ts, tool:$tool, tokens_est:$tokens_est, turn:$turn, skill:$skill}')
 
 log_metric "${STATE_DIR}/metrics.jsonl" "$TURN_METRIC"
+
+# ── A8/A9 — Skill-scoped + cross-worktree attribution ──
+# Row schema matches Atuin's event model so GROUP BY works cheaply on read:
+#   {ts, session_id, repo_id, worktree, cwd, host, skill, plugin, scope_id,
+#    parent_scope_id, depth, tool, token_estimate}
+SKILL_ROW=$(jq -cn \
+  --arg ts "$TIMESTAMP" \
+  --arg session_id "${ALLAY_SESSION_ID:-}" \
+  --arg repo_id "${ALLAY_REPO_ID:-}" \
+  --arg worktree "${ALLAY_WORKTREE_REL:-.}" \
+  --arg worktree_path "${ALLAY_WORKTREE_PATH:-}" \
+  --arg cwd "${HOOK_CWD:-$PWD}" \
+  --arg host "${ALLAY_HOST:-}" \
+  --arg skill "$ACTIVE_SKILL" \
+  --arg plugin "$ACTIVE_PLUGIN" \
+  --arg scope_id "$ACTIVE_SCOPE_ID" \
+  --arg parent_scope_id "$ACTIVE_SCOPE_PARENT" \
+  --argjson depth "${ACTIVE_SCOPE_DEPTH:-0}" \
+  --arg tool "$TOOL_NAME" \
+  --argjson token_estimate "$EST_TOKENS" \
+  '{ts:$ts, session_id:$session_id, repo_id:$repo_id, worktree:$worktree,
+    worktree_path:$worktree_path, cwd:$cwd, host:$host,
+    skill:$skill, plugin:$plugin, scope_id:$scope_id,
+    parent_scope_id:$parent_scope_id, depth:$depth,
+    tool:$tool, token_estimate:$token_estimate}')
+
+# Local skill-metrics (only meaningful when a skill is active).
+if [[ "$ACTIVE_SKILL" != "manual" ]]; then
+  log_metric "${STATE_DIR}/skill-metrics.jsonl" "$SKILL_ROW"
+fi
+
+# Global cross-worktree shard. Per-PID filename avoids concurrent-append
+# interleaving on filesystems without append-atomicity (Windows, NFS).
+# Readers glob all *.jsonl shards under the repo_id dir and sort by ts.
+if [[ -n "${ALLAY_GLOBAL_STATE_DIR:-}" ]]; then
+  mkdir -p "$ALLAY_GLOBAL_STATE_DIR" 2>/dev/null || true
+  GLOBAL_SHARD="${ALLAY_GLOBAL_STATE_DIR}/skill-metrics-global.$$.jsonl"
+  # Rotate at 10MB (matches ALLAY_MAX_METRICS_BYTES).
+  if [[ -f "$GLOBAL_SHARD" ]]; then
+    _g_size=$(wc -c < "$GLOBAL_SHARD" 2>/dev/null | tr -d ' ')
+    if [[ "${_g_size:-0}" -gt "${ALLAY_MAX_METRICS_BYTES:-10485760}" ]]; then
+      tail -n 1000 "$GLOBAL_SHARD" > "${GLOBAL_SHARD}.rot" 2>/dev/null \
+        && mv "${GLOBAL_SHARD}.rot" "$GLOBAL_SHARD"
+    fi
+    unset _g_size
+  fi
+  # One write() per line — small rows (<4KB) append atomically on Linux/ext4
+  # and are exclusive-per-PID on Windows, so no cross-process lock needed.
+  printf "%s\n" "$SKILL_ROW" >> "$GLOBAL_SHARD" 2>/dev/null || true
+fi
 
 # ── Cooldown check: max 1 alert per N turns ──
 LAST_ALERT_TURN=0

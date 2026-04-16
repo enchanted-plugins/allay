@@ -5,6 +5,16 @@ plugins/*/state/checkpoint.md
 plugins/*/state/checkpoint.md.tmp
 plugins/*/state/remember.md
 
+# A8 — Skill-Scoped Attribution
+plugins/*/state/skill-metrics.jsonl
+plugins/*/state/active-skills.json
+plugins/*/state/active-skills.json.tmp
+plugins/*/state/.session
+
+# A9 — learnings.json migrated to $XDG_DATA_HOME; any local copy is ephemeral
+plugins/*/state/learnings.json
+plugins/*/state/learnings.json.tmp
+
 # Lock directories
 *.lock/
 

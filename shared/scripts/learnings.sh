@@ -39,8 +39,40 @@ CG_METRICS="${PLUGINS_DIR}/context-guard/state/metrics.jsonl"
 TS_METRICS="${PLUGINS_DIR}/token-saver/state/metrics.jsonl"
 SK_METRICS="${PLUGINS_DIR}/state-keeper/state/metrics.jsonl"
 
-# ── Learnings file (stored in context-guard state — the "brain" of Allay) ──
-LEARNINGS_FILE="${PLUGINS_DIR}/context-guard/state/learnings.json"
+# ── Learnings file ──
+# A9: prefer the global XDG data dir so learnings survive across worktrees and
+# across cache wipes. Fall back to the legacy per-plugin path if the global dir
+# can't be set up (no HOME, no git, etc). No symlink — readers check both paths.
+LEARNINGS_LOCAL="${PLUGINS_DIR}/context-guard/state/learnings.json"
+LEARNINGS_GLOBAL=""
+
+# Best-effort: derive global path by sourcing session-init with the plugin's cwd.
+_l_SHARED_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+if [[ -f "${_l_SHARED_DIR}/scripts/session-init.sh" ]]; then
+  # Use a sub-shell to avoid polluting this script's env.
+  LEARNINGS_GLOBAL=$(
+    ALLAY_INIT_CWD="$PLUGINS_DIR" \
+    ALLAY_PLUGIN_STATE_DIR="${PLUGINS_DIR}/context-guard/state" \
+    bash -c "source '${_l_SHARED_DIR}/scripts/session-init.sh' >/dev/null 2>&1; printf '%s' \"\$ALLAY_GLOBAL_DATA_DIR\"" 2>/dev/null | tr -d '\r'
+  )
+fi
+unset _l_SHARED_DIR
+
+if [[ -n "$LEARNINGS_GLOBAL" ]]; then
+  LEARNINGS_FILE="${LEARNINGS_GLOBAL}/learnings.json"
+else
+  LEARNINGS_FILE="$LEARNINGS_LOCAL"
+fi
+
+# Migration (copy-on-first-write): if global path is chosen, no global file
+# exists yet, but a local file does, seed the global from local. No symlinks.
+if [[ "$LEARNINGS_FILE" != "$LEARNINGS_LOCAL" ]] \
+   && [[ ! -f "$LEARNINGS_FILE" ]] \
+   && [[ -f "$LEARNINGS_LOCAL" ]]; then
+  mkdir -p "$(dirname "$LEARNINGS_FILE")" 2>/dev/null || true
+  cp "$LEARNINGS_LOCAL" "$LEARNINGS_FILE" 2>/dev/null || true
+fi
+
 LEARNINGS_TMP="${LEARNINGS_FILE}.tmp"
 LEARNINGS_LOCK="${LEARNINGS_FILE}${ALLAY_LOCK_SUFFIX}"
 

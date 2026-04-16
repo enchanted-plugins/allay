@@ -25,3 +25,19 @@ ALLAY_RUNWAY_WINDOW=5
 ALLAY_DRIFT_COOLDOWN_TURNS=5
 ALLAY_DRIFT_READ_THRESHOLD=3
 ALLAY_DRIFT_FAIL_THRESHOLD=3
+
+# A8 — Skill-Scoped Attribution
+# TTL after which an un-unregistered skill scope is considered stale and evicted.
+# Default: 1h. Override via ALLAY_SKILL_TTL env var.
+ALLAY_SKILL_TTL="${ALLAY_SKILL_TTL:-3600}"
+ALLAY_ACTIVE_SKILLS_FILE="state/active-skills.json"
+ALLAY_SKILL_METRICS_FILE="state/skill-metrics.jsonl"
+ALLAY_SESSION_MARKER_FILE="state/.session"
+
+# A9 — Worktree Session Graph
+# XDG-compliant global state layout. Metrics → STATE, learnings → DATA.
+# Spec: https://specifications.freedesktop.org/basedir-spec/basedir-spec-latest.html
+ALLAY_XDG_STATE_HOME="${XDG_STATE_HOME:-${HOME}/.local/state}"
+ALLAY_XDG_DATA_HOME="${XDG_DATA_HOME:-${HOME}/.local/share}"
+ALLAY_GLOBAL_STATE_SUBDIR="allay"
+ALLAY_GLOBAL_DATA_SUBDIR="allay"

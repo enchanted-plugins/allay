@@ -12,7 +12,22 @@ mkdir -p "${TMP_DIR}/context-guard/state"
 mkdir -p "${TMP_DIR}/token-saver/state"
 mkdir -p "${TMP_DIR}/state-keeper/state"
 
-LEARNINGS_FILE="${TMP_DIR}/context-guard/state/learnings.json"
+# A9: learnings.sh now prefers the XDG global dir. Isolate it to a temp path
+# so the test doesn't touch the developer's real ~/.local/share/allay/.
+FAKE_XDG=$(mktemp -d)
+export XDG_DATA_HOME="$FAKE_XDG"
+
+# The learnings file ends up either in the isolated XDG dir (if session-init
+# resolves) or in the legacy local path (fallback). Resolve post-hoc.
+LEARNINGS_LOCAL="${TMP_DIR}/context-guard/state/learnings.json"
+_resolve_learnings_file() {
+  local candidates=()
+  # Any JSON file in the XDG global dir tree
+  while IFS= read -r f; do candidates+=("$f"); done < <(find "$FAKE_XDG" -name 'learnings.json' 2>/dev/null)
+  # Plus the local legacy path
+  [[ -f "$LEARNINGS_LOCAL" ]] && candidates+=("$LEARNINGS_LOCAL")
+  printf "%s\n" "${candidates[@]}" | head -1
+}
 
 # ── Session 1: Write mock metrics ──
 TS=$(date -u +"%Y-%m-%dT%H:%M:%SZ")
@@ -30,17 +45,18 @@ printf '{"event":"drift_detected","ts":"%s","pattern":"read_loop","file":"test.t
 # Run learnings.sh (session 1)
 OUTPUT=$(bash "$LEARNINGS_SCRIPT" "$TMP_DIR" 2>/dev/null) || true
 
-# Verify learnings.json was created
-if [[ ! -f "$LEARNINGS_FILE" ]]; then
-  echo "FAIL: learnings.json should be created after first session"
-  rm -rf "$TMP_DIR"
+# Resolve wherever learnings.json ended up (global preferred, local fallback).
+LEARNINGS_FILE=$(_resolve_learnings_file)
+if [[ -z "$LEARNINGS_FILE" ]] || [[ ! -f "$LEARNINGS_FILE" ]]; then
+  echo "FAIL: learnings.json should be created after first session (looked in $FAKE_XDG and $LEARNINGS_LOCAL)"
+  rm -rf "$TMP_DIR" "$FAKE_XDG"
   exit 1
 fi
 
 # Verify learnings.json is valid JSON
 if ! jq empty "$LEARNINGS_FILE" >/dev/null 2>&1; then
   echo "FAIL: learnings.json should be valid JSON"
-  rm -rf "$TMP_DIR"
+  rm -rf "$TMP_DIR" "$FAKE_XDG"
   exit 1
 fi
 
@@ -48,14 +64,14 @@ fi
 SESSIONS=$(jq -r '.sessions_recorded' "$LEARNINGS_FILE" 2>/dev/null)
 if [[ "$SESSIONS" != "1" ]]; then
   echo "FAIL: sessions_recorded should be 1, got $SESSIONS"
-  rm -rf "$TMP_DIR"
+  rm -rf "$TMP_DIR" "$FAKE_XDG"
   exit 1
 fi
 
 # Verify strategy_rates contains test_tail
 if ! jq -e '.strategy_rates.test_tail' "$LEARNINGS_FILE" >/dev/null 2>&1; then
   echo "FAIL: strategy_rates should contain test_tail"
-  rm -rf "$TMP_DIR"
+  rm -rf "$TMP_DIR" "$FAKE_XDG"
   exit 1
 fi
 
@@ -63,7 +79,7 @@ fi
 RATE=$(jq -r '.strategy_rates.test_tail.rate' "$LEARNINGS_FILE" 2>/dev/null)
 if ! awk "BEGIN{exit ($RATE > 0) ? 0 : 1}" 2>/dev/null; then
   echo "FAIL: test_tail rate should be > 0, got $RATE"
-  rm -rf "$TMP_DIR"
+  rm -rf "$TMP_DIR" "$FAKE_XDG"
   exit 1
 fi
 
@@ -81,7 +97,7 @@ bash "$LEARNINGS_SCRIPT" "$TMP_DIR" >/dev/null 2>/dev/null || true
 SESSIONS=$(jq -r '.sessions_recorded' "$LEARNINGS_FILE" 2>/dev/null)
 if [[ "$SESSIONS" != "2" ]]; then
   echo "FAIL: sessions_recorded should be 2, got $SESSIONS"
-  rm -rf "$TMP_DIR"
+  rm -rf "$TMP_DIR" "$FAKE_XDG"
   exit 1
 fi
 
@@ -89,7 +105,7 @@ fi
 SECOND_RATE=$(jq -r '.strategy_rates.test_tail.rate' "$LEARNINGS_FILE" 2>/dev/null)
 if [[ "$SECOND_RATE" == "null" ]] || [[ -z "$SECOND_RATE" ]]; then
   echo "FAIL: test_tail rate should still exist after second session"
-  rm -rf "$TMP_DIR"
+  rm -rf "$TMP_DIR" "$FAKE_XDG"
   exit 1
 fi
 
@@ -97,7 +113,7 @@ fi
 FIRES=$(jq -r '.strategy_rates.test_tail.fires' "$LEARNINGS_FILE" 2>/dev/null)
 if [[ "$FIRES" -lt 4 ]]; then
   echo "FAIL: test_tail fires should be >= 4 (3 + 1), got $FIRES"
-  rm -rf "$TMP_DIR"
+  rm -rf "$TMP_DIR" "$FAKE_XDG"
   exit 1
 fi
 
@@ -105,12 +121,12 @@ fi
 OUTPUT=$(bash "$LEARNINGS_SCRIPT" "$TMP_DIR" 2>/dev/null) || true
 if [[ -n "$OUTPUT" ]] && ! printf "%s" "$OUTPUT" | jq empty >/dev/null 2>&1; then
   echo "FAIL: stdout output should be valid JSONL"
-  rm -rf "$TMP_DIR"
+  rm -rf "$TMP_DIR" "$FAKE_XDG"
   exit 1
 fi
 
 # Cleanup
-rm -rf "$TMP_DIR"
+rm -rf "$TMP_DIR" "$FAKE_XDG"
 rm -rf "${LEARNINGS_FILE}.lock"
 
 exit 0

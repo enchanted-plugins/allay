@@ -152,7 +152,21 @@ fi)
  Bash=2K/ea, DupBlock=4K/ea, Drift=800tok/turn.
 
  ── Learnings ────────────────────────
-$(LEARNINGS_JSON="${PLUGINS_DIR}/context-guard/state/learnings.json"
+$(# A9: prefer global XDG learnings, fall back to the legacy per-plugin path.
+LEARNINGS_LOCAL="${PLUGINS_DIR}/context-guard/state/learnings.json"
+(
+  ALLAY_INIT_CWD="$PLUGINS_DIR"
+  _si="$(dirname "$0")/session-init.sh"
+  [[ -f "$_si" ]] && source "$_si" >/dev/null 2>&1 || true
+  if [[ -n "${ALLAY_GLOBAL_DATA_DIR:-}" ]] && [[ -f "${ALLAY_GLOBAL_DATA_DIR}/learnings.json" ]]; then
+    printf "%s" "${ALLAY_GLOBAL_DATA_DIR}/learnings.json"
+  else
+    printf "%s" "$LEARNINGS_LOCAL"
+  fi
+) > /tmp/allay-learnings-path.$$ 2>/dev/null
+LEARNINGS_JSON=$(cat /tmp/allay-learnings-path.$$ 2>/dev/null)
+rm -f /tmp/allay-learnings-path.$$
+[[ -z "$LEARNINGS_JSON" ]] && LEARNINGS_JSON="$LEARNINGS_LOCAL"
 if [[ -f "$LEARNINGS_JSON" ]] && jq empty "$LEARNINGS_JSON" >/dev/null 2>&1; then
   LEARN_SESSIONS=$(jq -r '.sessions_recorded // 0' "$LEARNINGS_JSON")
   echo " Sessions recorded:       ${LEARN_SESSIONS}"

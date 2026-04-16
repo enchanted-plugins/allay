@@ -40,6 +40,37 @@ TOOL ANALYTICS (this session)
   SESSION: ~[T] tokens used, ~[R] remaining (~[N] turns at current rate)
 ```
 
+## SKILL BREAKDOWN (A8 — Skill-Scoped Attribution)
+
+If `${CLAUDE_PLUGIN_ROOT}/state/skill-metrics.jsonl` exists and is non-empty,
+add a SKILL BREAKDOWN section after TOP CONSUMERS.
+
+Algorithm:
+1. Read every line from `skill-metrics.jsonl` (pre-filter with `grep -v '^$'`,
+   never `jq -s` — it slurps the whole file).
+2. Extract `skill` and `token_estimate` from each row.
+3. Add "manual" calls by subtracting the attributed calls from the turn-event total.
+   - Total calls = count of `"event":"turn"` lines in `metrics.jsonl`.
+   - Total tokens = sum of `tokens_est` in those same lines.
+   - Manual calls = total − Σ(skill-metrics calls).
+   - Manual tokens = total tokens − Σ(skill-metrics token_estimate).
+4. Group by `skill_id`, sum tokens and count calls. Include a "manual" row.
+5. Sort by tokens descending.
+6. Skip the section entirely if `skill-metrics.jsonl` has zero lines (no skill
+   ever fired — nothing useful to show).
+
+Format:
+
+```
+  SKILL BREAKDOWN (this session)
+    flux:converge     14 calls   ~8,200 tokens  (15%)
+    hornet:review      3 calls   ~1,100 tokens   (2%)
+    manual            83 calls  ~44,300 tokens  (83%)
+```
+
+Percentages are of the session total tokens and must sum to 100 (round the
+largest row to absorb rounding error).
+
 ## Suggestions
 
 Generate actionable suggestions based on patterns:
