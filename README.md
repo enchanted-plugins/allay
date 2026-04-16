@@ -1,6 +1,6 @@
 # Allay
 
-<p align="center">
+<p>
   <a href="LICENSE"><img alt="License: MIT" src="https://img.shields.io/badge/License-MIT-3fb950?style=for-the-badge"></a>
   <img alt="3 plugins" src="https://img.shields.io/badge/Plugins-3-bc8cff?style=for-the-badge">
   <img alt="9 algorithms" src="https://img.shields.io/badge/Algorithms-9-58a6ff?style=for-the-badge">
