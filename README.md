@@ -432,6 +432,22 @@ Bypass: prefix with `FULL:` to skip compression.
 Combined: 30-45% token reduction. Not 70%. Honest numbers.
 Plus the only tool that catches Claude going in circles — and learns from it.
 
+## Behavioral modules
+
+Every skill inherits a set of reusable behavioral contracts from [shared/](shared/) — loaded once into [CLAUDE.md](CLAUDE.md), applied across all plugins.
+
+| Module | What it governs |
+|--------|-----------------|
+| [discipline.md](shared/discipline.md) | Coding conduct: think-first, simplicity, surgical edits, goal-driven loops |
+| [context.md](shared/context.md) | Attention-budget hygiene, U-curve placement, checkpoint protocol |
+| [verification.md](shared/verification.md) | Independent checks, baseline snapshots, dry-run for destructive ops |
+| [delegation.md](shared/delegation.md) | Subagent contracts, tool whitelisting, parallel vs. serial rules |
+| [failure-modes.md](shared/failure-modes.md) | 14-code taxonomy for accumulated-learning logs |
+| [tool-use.md](shared/tool-use.md) | Tool-choice hygiene, error payload contract, parallel-dispatch rules |
+| [skill-authoring.md](shared/skill-authoring.md) | SKILL.md frontmatter discipline, discovery test |
+| [hooks.md](shared/hooks.md) | Advisory-only hooks, injection over denial, fail-open |
+| [precedent.md](shared/precedent.md) | Log self-observed failures to `state/precedent-log.md`; consult before risky steps |
+
 ## Architecture
 
 Full interactive architecture explorer with 4 tabbed diagrams and plugin component cards:

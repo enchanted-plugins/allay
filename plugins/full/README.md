@@ -16,3 +16,7 @@ Claude Code resolves the three dependencies and installs:
 - `allay-token-saver` — compression, dedup, delta mode, output efficiency
 
 If you want to cherry-pick a single plugin (e.g. just `allay-token-saver`), you can — but the three lifecycle phases (PreToolUse / PostToolUse / PreCompact) are designed to cooperate, so you'll typically want them all.
+
+## Behavioral modules
+
+Inherits the [shared behavioral modules](../../shared/) via root [CLAUDE.md](../../CLAUDE.md) — discipline, context, verification, delegation, failure-modes, tool-use, skill-authoring, hooks, precedent.

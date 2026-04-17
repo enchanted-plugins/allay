@@ -96,3 +96,7 @@ Fires on every tool call. Designed to be fast:
 - Pattern detection is O(1) per call
 - Single `jq -s` on bounded `tail -n 20` for fail loop detection
 - ~200-500 cache lines per session — trivial for grep
+
+## Behavioral modules
+
+Inherits the [shared behavioral modules](../../shared/) via root [CLAUDE.md](../../CLAUDE.md) — discipline, context, verification, delegation, failure-modes, tool-use, skill-authoring, hooks, precedent.

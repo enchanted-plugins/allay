@@ -70,3 +70,7 @@ The checkpoint still captures user-flagged context and project instructions.
 - `/allay:checkpoint <text>` — Append text to `state/remember.md` with timestamp. Survives compaction.
 - `/allay:checkpoint` — Display all saved items.
 - `/allay:checkpoint-show` — Display the most recent automatic checkpoint with age.
+
+## Behavioral modules
+
+Inherits the [shared behavioral modules](../../shared/) via root [CLAUDE.md](../../CLAUDE.md) — discipline, context, verification, delegation, failure-modes, tool-use, skill-authoring, hooks, precedent.

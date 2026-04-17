@@ -91,3 +91,7 @@ Code blocks are never modified — only prose is compressed.
 Tracks tool call count per session. For old results (30+ calls ago) that are large:
 - Alerts via stderr that the result may be stale
 - Logs `result_aged` event to metrics for analytics
+
+## Behavioral modules
+
+Inherits the [shared behavioral modules](../../shared/) via root [CLAUDE.md](../../CLAUDE.md) — discipline, context, verification, delegation, failure-modes, tool-use, skill-authoring, hooks, precedent.
