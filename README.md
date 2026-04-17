@@ -40,41 +40,19 @@ The context health platform that learns what wastes your tokens — and stops it
 
 Allay splits into three plugins that each own one lifecycle phase. **token-saver** fires on `PreToolUse` to compress verbose Bash output (A3), block duplicate file reads (A5), and return deltas on changed re-reads (A6). **context-guard** fires on `PostToolUse` to forecast runway (A2) and detect drift patterns (A1). **state-keeper** fires on `PreCompact` to write an atomic checkpoint (A4). Across sessions, A7 accumulates per-strategy success rates. The diagram below shows this flow.
 
-```mermaid
-graph TD
-    CC(["🔧 Claude Code — Tool Calls"])
+<p align="center">
+  <a href="docs/assets/hooks.mmd" title="View hook-binding diagram source (Mermaid)">
+    <img src="docs/assets/hooks.svg"
+         alt="Allay hook bindings: Claude Code tool calls fan out into token-saver (PreToolUse · A3/A5/A6), context-guard (PostToolUse · A1/A2), state-keeper (PreCompact · A4); drift/metric events feed A7 Bayesian cross-session accumulation"
+         width="100%" style="max-width:1100px;">
+  </a>
+</p>
 
-    CC -->|PreToolUse| TS
-    CC -->|PostToolUse| CG
-    CC -->|PreCompact| SK
+<sub align="center">
 
-    subgraph TS["token-saver"]
-        TS_A3["A3 Shannon Compression<br/><small>15 bash rules</small>"]
-        TS_A5["A5 Content-Addressable Dedup<br/><small>SHA-256 + TTL cache</small>"]
-        TS_A6["A6 Content-Addressable Delta<br/><small>diff on re-read</small>"]
-        TS_AGE["Temporal Decay<br/><small>age-based alerts</small>"]
-    end
+Source: [docs/assets/hooks.mmd](docs/assets/hooks.mmd) · Regeneration command in [docs/assets/README.md](docs/assets/README.md).
 
-    subgraph CG["context-guard"]
-        CG_A1["A1 Markov Drift Detection<br/><small>read loop · edit-revert · fail loop</small>"]
-        CG_A2["A2 Linear Runway Forecasting<br/><small>token estimation per turn</small>"]
-    end
-
-    subgraph SK["state-keeper"]
-        SK_A4["A4 Atomic State Serialization<br/><small>checkpoint before wipe</small>"]
-    end
-
-    TS -->|"exit 0/2<br/>updatedInput"| OUT_TS(["tokens saved"])
-    CG -->|"stderr alert<br/>metrics.jsonl"| OUT_CG(["drift detected"])
-    SK -->|"checkpoint.md"| OUT_SK(["context preserved"])
-    OUT_CG --> A7["A7 Bayesian Strategy Accumulation<br/><small>learns across sessions</small>"]
-
-    style CC fill:#0d1117,stroke:#bc8cff,color:#e6edf3
-    style TS fill:#161b22,stroke:#58a6ff,color:#e6edf3
-    style CG fill:#161b22,stroke:#3fb950,color:#e6edf3
-    style SK fill:#161b22,stroke:#d29922,color:#e6edf3
-    style A7 fill:#1c2333,stroke:#bc8cff,color:#e6edf3
-```
+</sub>
 
 Three plugins. Three lifecycle phases. No overlap. No dependencies between plugins.
 
@@ -143,23 +121,19 @@ remaining, and accumulated learnings. Conservative methodology. We don't inflate
 
 Every turn cycles through the same path. Tool calls hit `PreToolUse` (token-saver), then execute, then hit `PostToolUse` (context-guard). When context approaches full, `PreCompact` fires and state-keeper writes `checkpoint.md` before the wipe. On resume, the restorer agent reads the checkpoint back and the session continues without manual re-briefing.
 
-```mermaid
-graph LR
-    A(["🟢 Session Start"]) --> B["Turn N:<br/>Tool Call"]
-    B --> C{"PreToolUse<br/><small>token-saver</small>"}
-    C -->|compress / dedup / delta| D["Tool Executes"]
-    D --> E{"PostToolUse<br/><small>context-guard</small>"}
-    E -->|"drift detect<br/>token estimation"| B
-    B -.->|"Context full"| F["⚠️ Compaction"]
-    F --> G{"PreCompact<br/><small>state-keeper</small>"}
-    G -->|"checkpoint.md saved"| H["Context Wiped"]
-    H --> I["state-recovery skill<br/>or restorer agent"]
-    I -->|"Read checkpoint.md"| J(["🔄 Session Continues"])
+<p align="center">
+  <a href="docs/assets/lifecycle.mmd" title="View session-lifecycle diagram source (Mermaid)">
+    <img src="docs/assets/lifecycle.svg"
+         alt="Allay session lifecycle: session start, turn N tool call, PreToolUse (token-saver) compresses, tool executes, PostToolUse (context-guard) detects drift / forecasts runway, loop continues until C(t) ≥ C_max triggers compaction; PreCompact (state-keeper) writes checkpoint.md; context wiped; restorer agent reads checkpoint; session continues"
+         width="100%" style="max-width:1100px;">
+  </a>
+</p>
 
-    style F fill:#f85149,color:#fff
-    style G fill:#d29922,color:#0d1117
-    style I fill:#3fb950,color:#0d1117
-```
+<sub align="center">
+
+Source: [docs/assets/lifecycle.mmd](docs/assets/lifecycle.mmd) · Regeneration command in [docs/assets/README.md](docs/assets/README.md).
+
+</sub>
 
 Every tool call flows through the same pipeline. When context fills up, state-keeper saves a checkpoint before the wipe, and the restorer agent brings it back autonomously.
 
@@ -177,23 +151,23 @@ States: `PRODUCTIVE`, `READ_LOOP`, `EDIT_REVERT`, `TEST_FAIL_LOOP`.
 Transitions on tool name + file hash + exit code.
 5-turn cooldown between alerts.
 
-$$P(\text{drift} \mid s_1, \dots, s_n) = \begin{cases} 1 & \text{if } |\{s_i = s_j\}| \geq \theta \\ 0 & \text{otherwise} \end{cases}$$
+<p align="center"><img src="docs/assets/math/a1-drift.svg" alt="P(drift | s1, ..., sn) = 1 if count of repeated states >= theta; else 0"></p>
 
-Where $\theta = 3$ (configurable via `ALLAY_DRIFT_READ_THRESHOLD`).
+Where θ = 3 (configurable via `ALLAY_DRIFT_READ_THRESHOLD`).
 
 ### A2. Linear Runway Forecasting
 
 Estimates turns until compaction from a sliding window of token velocities.
 
-$$\hat{R} = \frac{C_{max} - \sum_{i=1}^{n} t_i}{\bar{t}_w}, \quad \text{CI}_{95} = \hat{R} \pm 1.96 \cdot \frac{\sigma_t}{\bar{t}_w} \cdot \hat{R}$$
+<p align="center"><img src="docs/assets/math/a2-runway.svg" alt="R_hat = (C_max - sum t_i) / t_bar_w; 95% CI = R_hat ± 1.96 · sigma_t / t_bar_w · R_hat"></p>
 
-Where $C_{max} = 200{,}000$ tokens and $\bar{t}_w$ is the windowed mean of recent turns.
+Where C_max = 200,000 tokens and t̄_w is the windowed mean of recent turns.
 
 ### A3. Shannon Compression
 
 Reduces output $O$ to $O'$ preserving information density above threshold $\theta$:
 
-$$H(O') \geq \theta \cdot H(O), \quad \theta = \begin{cases} 1.0 & \text{code} \\ 0.7 & \text{tests} \\ 0.3 & \text{logs} \end{cases}$$
+<p align="center"><img src="docs/assets/math/a3-shannon.svg" alt="H(O') >= theta · H(O); theta = 1.0 code, 0.7 tests, 0.3 logs"></p>
 
 15 pattern-matched rules for input compression. Extensions:
 - **Shannon Output Compression** — prose terse mode (4 levels)
@@ -203,7 +177,7 @@ $$H(O') \geq \theta \cdot H(O), \quad \theta = \begin{cases} 1.0 & \text{code} \
 
 Write-validate-rename protocol for checkpoint persistence.
 
-$$\text{write}(tmp) \rightarrow \text{validate}(tmp) \rightarrow \text{rename}(tmp, target)$$
+<p align="center"><img src="docs/assets/math/a4-atomic.svg" alt="write(tmp) -> validate(tmp) -> rename(tmp, target)"></p>
 
 50KB bound. Atomic `mkdir` locking (never `flock`).
 
@@ -211,7 +185,7 @@ $$\text{write}(tmp) \rightarrow \text{validate}(tmp) \rightarrow \text{rename}(t
 
 SHA-256 hash + TTL cache for read deduplication.
 
-$$\text{decision}(f) = \begin{cases} \text{BLOCK} & h(f) = h_{cached} \land \Delta t < \text{TTL} \\ \text{ALLOW} & \Delta t \geq \text{TTL} \end{cases}$$
+<p align="center"><img src="docs/assets/math/a5-dedup.svg" alt="decision(f) = BLOCK if hash matches cache and Δt < TTL; ALLOW if Δt >= TTL"></p>
 
 TTL = 600s. Block unchanged, allow after expiry.
 
@@ -219,7 +193,7 @@ TTL = 600s. Block unchanged, allow after expiry.
 
 Extension of A5. Third decision path for changed files:
 
-$$\text{decision}(f) = \text{DELTA} \quad \text{when } h(f) \neq h_{cached} \land \Delta t < \text{TTL}$$
+<p align="center"><img src="docs/assets/math/a6-delta.svg" alt="decision(f) = DELTA when hash differs from cache and Δt < TTL"></p>
 
 Returns unified diff with 3 context lines instead of full file content.
 Only activates when diff is smaller than half the full file.
@@ -228,7 +202,7 @@ Only activates when diff is smaller than half the full file.
 
 Exponential moving average over compression strategy success rates across sessions.
 
-$$r_{new} = \alpha \cdot s_{current} + (1 - \alpha) \cdot r_{prior}, \quad \alpha = 0.3$$
+<p align="center"><img src="docs/assets/math/a7-bayesian.svg" alt="r_new = alpha · s_current + (1 - alpha) · r_prior; alpha = 0.3"></p>
 
 Detects dormant rules, chronic drift patterns, and velocity drift.
 Persisted to `learnings.json` after each report.
@@ -240,7 +214,7 @@ if none is registered). Skills register a scope at entry, unregister at exit;
 the stack supports nesting so a parent skill that invokes a child skill still
 has correct parent/child lineage on every event.
 
-$$\text{attr}(c) = \begin{cases} s_{\text{top}} & \exists\, s \in S : \text{alive}(s.\text{pid}) \land (t - s.\text{start}) < \text{TTL} \\ \texttt{"manual"} & \text{otherwise} \end{cases}$$
+<p align="center"><img src="docs/assets/math/a8-attribution.svg" alt="attr(c) = top-of-stack skill if any alive and within TTL; otherwise 'manual'"></p>
 
 Where $S$ is the stack of active skills (LIFO), $s_{\text{top}}$ is the most
 recent, and $\text{TTL} = 3600\text{s}$ (configurable via `ALLAY_SKILL_TTL`).
@@ -256,7 +230,7 @@ surfaces the per-skill breakdown.
 Concurrent Claude Code sessions across multiple git worktrees of the same repo
 are unified into one view by the root-commit hash:
 
-$$\text{repo\\_id} = \text{sha256}(c_0)_{[:12]}, \quad c_0 = \texttt{git rev-list --max-parents=0 HEAD}$$
+<p align="center"><img src="docs/assets/math/a9-repoid.svg" alt="repo_id = first 12 chars of sha256(c_0); c_0 = git rev-list --max-parents=0 HEAD"></p>
 
 The root commit is stable across clones, forks, renames, and worktree paths —
 basename-of-toplevel is not. Cross-worktree events land in
@@ -265,7 +239,7 @@ basename-of-toplevel is not. Cross-worktree events land in
 interleaving on filesystems without atomicity guarantees (Windows, NFS).
 Readers glob all shards and merge by `ts`:
 
-$$\text{unified\\_session} = \bigcup_{w \in W} \text{shards}(w), \quad W = \text{worktrees}(\text{repo\\_id})$$
+<p align="center"><img src="docs/assets/math/a9-unified.svg" alt="unified_session = union of shards across all worktrees of the repo_id"></p>
 
 `/allay:report` renders a WORKTREE OVERVIEW section when ≥ 2 worktrees have
 written. `/allay:report --global` forces the unified view across every session
@@ -318,44 +292,19 @@ bash <(curl -s https://raw.githubusercontent.com/enchanted-plugins/allay/main/in
 
 Tool calls write events to three plugin state directories. `token-saver/state/metrics.jsonl` records compressions, dedup blocks, and delta reads. `context-guard/state/metrics.jsonl` records per-turn token estimates and drift detections; `learnings.json` accumulates cross-session strategy rates (A7). `state-keeper/state/` holds the latest `checkpoint.md`, any user-flagged `remember.md`, and checkpoint events. `/allay:report` reads all three plugins to produce the session dashboard.
 
-```mermaid
-graph TB
-    subgraph tools["Tool Calls"]
-        Bash["Bash"]
-        Read["Read"]
-        Write["Write / Edit"]
-        Search["Glob / Grep"]
-    end
+<p align="center">
+  <a href="docs/assets/state-flow.mmd" title="View state-flow diagram source (Mermaid)">
+    <img src="docs/assets/state-flow.svg"
+         alt="Allay per-session state flow: tool calls (Bash, Read, Write, Glob/Grep) append events to three JSONL journals (token-saver, context-guard, state-keeper), which are merged by /allay:report into a session dashboard; A7 learnings accumulate across sessions in learnings.json"
+         width="100%" style="max-width:1100px;">
+  </a>
+</p>
 
-    subgraph ts_state["token-saver/state/"]
-        ts_m["metrics.jsonl<br/><small>bash_compressed · duplicate_blocked<br/>delta_read · result_aged</small>"]
-    end
+<sub align="center">
 
-    subgraph cg_state["context-guard/state/"]
-        cg_m["metrics.jsonl<br/><small>turn (token est.) · drift_detected</small>"]
-        cg_l["learnings.json<br/><small>strategy rates across sessions</small>"]
-    end
+Source: [docs/assets/state-flow.mmd](docs/assets/state-flow.mmd) · Regeneration command in [docs/assets/README.md](docs/assets/README.md).
 
-    subgraph sk_state["state-keeper/state/"]
-        sk_c["checkpoint.md<br/><small>branch · files · instructions</small>"]
-        sk_r["remember.md<br/><small>user-flagged items</small>"]
-        sk_m["metrics.jsonl<br/><small>checkpoint_saved</small>"]
-    end
-
-    Bash --> ts_m
-    Read --> ts_m
-    Bash --> cg_m
-    Read --> cg_m
-    Write --> cg_m
-    Search --> cg_m
-
-    cg_m --> report(["📊 /allay:report"])
-    ts_m --> report
-    sk_m --> report
-    cg_m --> cg_l
-
-    style report fill:#39d353,color:#0d1117
-```
+</sub>
 
 ```
 state-keeper/state/
