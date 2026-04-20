@@ -209,10 +209,6 @@ Expected: `/allay:doctor` confirms hooks registered, jq available, state dirs wr
 | restorer | Haiku | state-keeper | Autonomous context restoration |
 | compressor | Haiku | token-saver | Compression strategy analysis |
 
-## Roadmap
-
-Tracked in [docs/ROADMAP.md](docs/ROADMAP.md) and the shared [ecosystem map](https://github.com/enchanted-plugins/flux/blob/main/docs/ecosystem.md). For upcoming work specific to Allay, see issues tagged [roadmap](https://github.com/enchanted-plugins/allay/labels/roadmap).
-
 ## What You Get Per Session
 
 Tool calls write events to three plugin state directories. `token-saver/state/metrics.jsonl` records compressions, dedup blocks, and delta reads. `context-guard/state/metrics.jsonl` records per-turn token estimates and drift detections; `learnings.json` accumulates cross-session strategy rates (A7). `state-keeper/state/` holds the latest `checkpoint.md`, any user-flagged `remember.md`, and checkpoint events. `/allay:report` reads all three plugins to produce the session dashboard.
@@ -252,6 +248,10 @@ $XDG_STATE_HOME/allay/<repo_id>/       # A9 — cross-worktree global
 $XDG_DATA_HOME/allay/<repo_id>/        # A9 — long-lived learnings
 └── learnings.json                     # A7 strategy rates; migrated from local
 ```
+
+## Roadmap
+
+Tracked in [docs/ROADMAP.md](docs/ROADMAP.md) and the shared [ecosystem map](https://github.com/enchanted-plugins/flux/blob/main/docs/ecosystem.md). For upcoming work specific to Allay, see issues tagged [roadmap](https://github.com/enchanted-plugins/allay/labels/roadmap).
 
 ## The Science Behind Allay
 
