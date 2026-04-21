@@ -477,3 +477,13 @@ See [CITATION.cff](CITATION.cff) for additional formats (APA, MLA, EndNote).
 ## License
 
 MIT
+
+---
+
+## Role in the ecosystem
+
+Allay is the **session-health layer** — it watches the token economy of every Claude Code session. Upstream, Flux's prompts arrive through the conversation and Allay measures them; tool-call output flows through the same observation path. Downstream, Nook reads Allay's per-turn token accounting and attributes it across plugin × sub-plugin × agent tier × model for forecast and budget purposes.
+
+Allay does not engineer prompts (Flux's lane), score change trust (Hornet's lane), review code correctness (Mantis's lane), enforce budget gates via kill-switches (Nook uses cooperative degradation, not pre-emption), or scan security surfaces (Reaper's lane). It observes token burn and keeps the session recoverable across compaction.
+
+See [docs/ecosystem.md § Data Flow Between Plugins](docs/ecosystem.md#data-flow-between-plugins) for the full map.
