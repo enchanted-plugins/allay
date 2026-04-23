@@ -201,7 +201,7 @@
     Bash --> token_saver_metrics
     Read --> token_saver_metrics
     Bash --> token_saver_metrics
-    report["📊 /fae:report<br/>Aggregates all metrics"]
+    report["📊 /emu:report<br/>Aggregates all metrics"]
     context_guard_metrics --> report
     state_keeper_metrics --> report
     token_saver_metrics --> report</pre>
@@ -231,15 +231,15 @@
     
         <div class="plugin-card">
           <h3>context-guard</h3>
-          <p class="desc">The eyes of Fae. Drift Alert, Runway, Analytics, and Report.</p>
+          <p class="desc">The eyes of Emu. Drift Alert, Runway, Analytics, and Report.</p>
           <div class="section-label">Hooks</div>
           <div class="hook"><span class="phase">PostToolUse</span> <span class="matcher">Bash|Read|Write|Edit|MultiEdit|Glob|Grep</span> → <code>detect-drift.sh</code> <span class="dim">(15s)</span></div>
           <div class="section-label">Skills</div>
           <div class="item"><strong>drift-awareness</strong></div><div class="item"><strong>token-awareness</strong></div>
           <div class="section-label">Agents</div>
-          <div class="item"><strong>fae-analyst</strong> <span class="dim">(haiku, fork)</span></div><div class="item"><strong>fae-forecaster</strong> <span class="dim">(haiku, fork)</span></div>
+          <div class="item"><strong>emu-analyst</strong> <span class="dim">(haiku, fork)</span></div><div class="item"><strong>emu-forecaster</strong> <span class="dim">(haiku, fork)</span></div>
           <div class="section-label">Commands</div>
-          <div class="item"><code>fae:analytics</code></div><div class="item"><code>fae:doctor</code></div><div class="item"><code>fae:report</code></div><div class="item"><code>fae:runway</code></div>
+          <div class="item"><code>emu:analytics</code></div><div class="item"><code>emu:doctor</code></div><div class="item"><code>emu:report</code></div><div class="item"><code>emu:runway</code></div>
         </div>
         <div class="plugin-card">
           <h3>state-keeper</h3>
@@ -249,9 +249,9 @@
           <div class="section-label">Skills</div>
           <div class="item"><strong>state-recovery</strong></div>
           <div class="section-label">Agents</div>
-          <div class="item"><strong>fae-restorer</strong> <span class="dim">(haiku, fork)</span></div>
+          <div class="item"><strong>emu-restorer</strong> <span class="dim">(haiku, fork)</span></div>
           <div class="section-label">Commands</div>
-          <div class="item"><code>fae:checkpoint-show</code></div><div class="item"><code>fae:checkpoint</code></div>
+          <div class="item"><code>emu:checkpoint-show</code></div><div class="item"><code>emu:checkpoint</code></div>
         </div>
         <div class="plugin-card">
           <h3>token-saver</h3>
@@ -261,7 +261,7 @@
           <div class="section-label">Skills</div>
           <div class="item"><strong>compression-rules</strong></div><div class="item"><strong>output-efficiency</strong></div>
           <div class="section-label">Agents</div>
-          <div class="item"><strong>fae-compressor</strong> <span class="dim">(haiku, fork)</span></div>
+          <div class="item"><strong>emu-compressor</strong> <span class="dim">(haiku, fork)</span></div>
           <div class="section-label">Commands</div>
           <div class="dim">None</div>
         </div>

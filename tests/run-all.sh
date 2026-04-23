@@ -31,7 +31,7 @@ run_test() {
 }
 
 echo "══════════════════════════════════════"
-echo " FAE TEST SUITE"
+echo " EMU TEST SUITE"
 echo "══════════════════════════════════════"
 echo ""
 

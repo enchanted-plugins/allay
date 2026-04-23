@@ -32,7 +32,7 @@ Default (no flag) — local session only:
 
 ```
 ══════════════════════════════════════
- FAE SESSION REPORT
+ EMU SESSION REPORT
 ══════════════════════════════════════
 
  ── Worktree Overview (A9) ───────────

@@ -52,7 +52,7 @@ You are the Emu session analyst. Your job is to read metrics data and produce a 
 4. Output in this exact format (WORKTREE OVERVIEW shown only when ≥2 worktrees or `--global`):
 ```
 ══════════════════════════════════════
- FAE SESSION REPORT
+ EMU SESSION REPORT
 ══════════════════════════════════════
 
  ── Worktree Overview (A9) ───────────

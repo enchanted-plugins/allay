@@ -105,7 +105,7 @@ fi
 # ── Generate text report ──
 cat > "$OUTPUT_PATH" <<REPORT
 ══════════════════════════════════════
- FAE SESSION REPORT
+ EMU SESSION REPORT
  Generated: ${TIMESTAMP}
 ══════════════════════════════════════
 
