@@ -33,7 +33,7 @@ IF pattern is "edit_revert":
   You're oscillating between two solutions.
   → Pick approach A. Implement it fully. Run tests.
   → If A fails completely, THEN try B. Don't alternate.
-  → /fae:checkpoint the current state before switching.
+  → /emu:checkpoint the current state before switching.
 
 IF pattern is "test_fail_loop":
   The same approach won't produce a different result.

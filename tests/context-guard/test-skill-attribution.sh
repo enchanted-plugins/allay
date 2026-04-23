@@ -25,7 +25,7 @@ cleanup() {
   rm -rf "${STATE_DIR}/metrics.jsonl.lock" "${STATE_DIR}/skill-metrics.jsonl.lock" 2>/dev/null || true
   [[ -n "${TF:-}" ]] && rm -f "$TF" 2>/dev/null
   [[ -n "${MT:-}" ]] && rm -f "$MT" 2>/dev/null
-  [[ -n "${SH:-}" ]] && rm -f "/tmp/fae-drift-${SH}.jsonl" "/tmp/fae-drift-cooldown-${SH}" 2>/dev/null
+  [[ -n "${SH:-}" ]] && rm -f "/tmp/emu-drift-${SH}.jsonl" "/tmp/emu-drift-cooldown-${SH}" 2>/dev/null
 }
 trap cleanup EXIT
 
@@ -37,7 +37,7 @@ echo "attribution test" > "$TF"
 MT=$(mktemp)
 echo '{"role":"user","content":"x"}' > "$MT"
 SH=$(md5sum "$MT" 2>/dev/null | cut -c1-8 || echo "test")
-rm -f "/tmp/fae-drift-${SH}.jsonl" "/tmp/fae-drift-cooldown-${SH}"
+rm -f "/tmp/emu-drift-${SH}.jsonl" "/tmp/emu-drift-cooldown-${SH}"
 
 INPUT=$(jq -n --arg t "$MT" --arg f "$TF" '{transcript_path:$t, cwd:"/tmp", tool_name:"Read", tool_input:{file_path:$f}, tool_result:{content:"hi"}, hook_event_name:"PostToolUse"}')
 

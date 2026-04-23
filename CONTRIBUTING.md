@@ -13,7 +13,7 @@ Before submitting a PR, verify:
 2. **Never use `$CLAUDE_SESSION_ID`** for cache keys — doesn't reset after /clear.
 3. **Never use `jq -s`** on growing files — slurps entire file into RAM. Safe on bounded inputs (`tail -n 20` output).
 4. **Every hook has `trap 'exit 0' ERR INT TERM`** — hooks must never break Claude.
-5. **64KB stdout limit** — write large output to tmpfiles under `/tmp/fae-*`.
+5. **64KB stdout limit** — write large output to tmpfiles under `/tmp/emu-*`.
 6. **Validate JSON before parsing** with `jq empty`.
 7. **Block URL-encoded path traversal** — decode `%2e%2e` before checking.
 8. **Rotation at 10MB** not 1MB.
@@ -74,7 +74,7 @@ Register the plugin in `.claude-plugin/marketplace.json`.
 
 ```json
 {
-  "name": "fae-<plugin-name>",
+  "name": "emu-<plugin-name>",
   "description": "<one-line description>",
   "version": "2.0.0",
   "author": { "name": "Emu" },
@@ -130,7 +130,7 @@ Register the plugin in `.claude-plugin/marketplace.json`.
 2. Required frontmatter:
    ```yaml
    ---
-   name: fae-<agent>
+   name: emu-<agent>
    model: haiku
    context: fork
    allowed-tools:

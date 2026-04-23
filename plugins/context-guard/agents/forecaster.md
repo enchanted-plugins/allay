@@ -1,5 +1,5 @@
 ---
-name: fae-forecaster
+name: emu-forecaster
 description: >
   Background agent that runs the Linear Runway Forecasting algorithm.
   Reads token estimates, computes runway with confidence interval.

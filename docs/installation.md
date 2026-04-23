@@ -1,6 +1,6 @@
 # Installation
 
-`fae` is an @enchanted-plugins product. It installs as a Claude Code plugin.
+`emu` is an @enchanted-plugins product. It installs as a Claude Code plugin.
 
 ## Prerequisites
 
@@ -12,8 +12,8 @@
 ## Recommended: Claude Code marketplace
 
 ```
-/plugin marketplace add enchanted-plugins/fae
-/plugin install full@fae
+/plugin marketplace add enchanted-plugins/emu
+/plugin install full@emu
 ```
 
 Claude Code resolves the meta-plugin's dependency list and installs every sub-plugin in one pass. Verify with:
@@ -22,14 +22,14 @@ Claude Code resolves the meta-plugin's dependency list and installs every sub-pl
 /plugin list
 ```
 
-You should see each sub-plugin listed with its version. If a sub-plugin is missing, check `/plugin marketplace list` and confirm the `enchanted-plugins/fae` entry is present.
+You should see each sub-plugin listed with its version. If a sub-plugin is missing, check `/plugin marketplace list` and confirm the `enchanted-plugins/emu` entry is present.
 
 ## Cherry-pick a single sub-plugin
 
 Some sub-plugins are useful on their own. To install only one:
 
 ```
-/plugin install <sub-plugin-name>@fae
+/plugin install <sub-plugin-name>@emu
 ```
 
 See [README.md](../README.md) § Plugins for the list of sub-plugin names.
@@ -39,7 +39,7 @@ See [README.md](../README.md) § Plugins for the list of sub-plugin names.
 The shell installer clones the repo, validates the environment, and copies plugins into `~/.claude/plugins/`. Use this path when you need the local `shared/scripts/*.py` available outside Claude Code.
 
 ```bash
-bash <(curl -s https://raw.githubusercontent.com/enchanted-plugins/fae/main/install.sh)
+bash <(curl -s https://raw.githubusercontent.com/enchanted-plugins/emu/main/install.sh)
 ```
 
 The installer is idempotent — re-running it upgrades in place.
@@ -47,8 +47,8 @@ The installer is idempotent — re-running it upgrades in place.
 ## From source (for contributors)
 
 ```bash
-git clone https://github.com/enchanted-plugins/fae.git
-cd fae
+git clone https://github.com/enchanted-plugins/emu.git
+cd emu
 bash install.sh
 cd docs/assets && npm install     # only if you will touch diagrams / math SVGs
 ```
@@ -64,12 +64,12 @@ If any step fails, see [troubleshooting.md](troubleshooting.md).
 ## Uninstall
 
 ```
-/plugin uninstall full@fae
-/plugin marketplace remove enchanted-plugins/fae
+/plugin uninstall full@emu
+/plugin marketplace remove enchanted-plugins/emu
 ```
 
-To remove the shell-installed copies as well: `rm -rf ~/.claude/plugins/fae-*`.
+To remove the shell-installed copies as well: `rm -rf ~/.claude/plugins/emu-*`.
 
 ## Upgrades
 
-`/plugin upgrade full@fae` for the marketplace install. Re-run the shell installer for the curl-based install. Before upgrading across a major version, skim [CHANGELOG.md](../CHANGELOG.md) for breaking changes.
+`/plugin upgrade full@emu` for the marketplace install. Re-run the shell installer for the curl-based install. Before upgrading across a major version, skim [CHANGELOG.md](../CHANGELOG.md) for breaking changes.

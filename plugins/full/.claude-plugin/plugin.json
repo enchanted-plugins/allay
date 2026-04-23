@@ -1,13 +1,13 @@
 {
   "name": "full",
-  "description": "Meta-plugin that installs every Emu plugin at once via dependency resolution. Installs: fae-context-guard, fae-state-keeper, fae-token-saver.",
+  "description": "Meta-plugin that installs every Emu plugin at once via dependency resolution. Installs: emu-context-guard, emu-state-keeper, emu-token-saver.",
   "version": "2.0.0",
   "author": { "name": "Emu" },
   "license": "MIT",
   "keywords": ["meta", "bundle", "install-all"],
   "dependencies": [
-    "fae-context-guard",
-    "fae-state-keeper",
-    "fae-token-saver"
+    "emu-context-guard",
+    "emu-state-keeper",
+    "emu-token-saver"
   ]
 }

@@ -81,7 +81,7 @@ fi
 PARENT_ID="$FAE_SCOPE_ID"
 
 # Child inherits parent via env
-eval "$(bash "$SKILL_SCOPE" register raven:review raven)"
+eval "$(bash "$SKILL_SCOPE" register crow:review crow)"
 if [[ "${FAE_SCOPE_DEPTH:-}" != "1" ]]; then
   echo "FAIL: child depth should be 1, got '${FAE_SCOPE_DEPTH}'"
   exit 1
@@ -93,13 +93,13 @@ fi
 
 # current returns the top of stack (most recent)
 CUR=$(bash "$SKILL_SCOPE" current)
-if [[ "$CUR" != "raven:review" ]]; then
-  echo "FAIL: current should be top-of-stack 'raven:review', got '$CUR'"
+if [[ "$CUR" != "crow:review" ]]; then
+  echo "FAIL: current should be top-of-stack 'crow:review', got '$CUR'"
   exit 1
 fi
 
 # unregister child → current falls back to parent
-bash "$SKILL_SCOPE" unregister raven:review >/dev/null
+bash "$SKILL_SCOPE" unregister crow:review >/dev/null
 CUR=$(bash "$SKILL_SCOPE" current)
 if [[ "$CUR" != "wixie:converge" ]]; then
   echo "FAIL: after unregister child, current should be parent 'wixie:converge', got '$CUR'"

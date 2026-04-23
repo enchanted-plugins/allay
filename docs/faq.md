@@ -4,17 +4,17 @@ Quick answers to questions that don't yet have their own doc. For anything deepe
 
 ## What's the difference between Emu and the other siblings?
 
-Emu answers *"what did I spend?"* — it watches your session's token economy: runway, drift, dedup, checkpoints. Sibling plugins answer different questions in the same session: Wixie engineers prompts, Raven watches change trust, Hydra scans for security surface, Sylph coordinates git workflow. All are independent installs; none require the others. See [docs/ecosystem.md](ecosystem.md) for the full map.
+Emu answers *"what did I spend?"* — it watches your session's token economy: runway, drift, dedup, checkpoints. Sibling plugins answer different questions in the same session: Wixie engineers prompts, Crow watches change trust, Hydra scans for security surface, Sylph coordinates git workflow. All are independent installs; none require the others. See [docs/ecosystem.md](ecosystem.md) for the full map.
 
 ## Do I need the other siblings to use Emu?
 
-No. Emu is self-contained — install `full@fae` and every command works standalone. The siblings compose if you install them, but nothing in Emu depends on another repo being present.
+No. Emu is self-contained — install `full@emu` and every command works standalone. The siblings compose if you install them, but nothing in Emu depends on another repo being present.
 
 ## How do I report a bug vs. ask a question vs. disclose a security issue?
 
 - **Security vulnerability** — private advisory, never a public issue. See [SECURITY.md](../SECURITY.md).
 - **Reproducible bug** — a bug report issue with repro steps + exact versions.
-- **Usage question or half-formed idea** — [Discussions](https://github.com/enchanted-plugins/fae/discussions).
+- **Usage question or half-formed idea** — [Discussions](https://github.com/enchanted-plugins/emu/discussions).
 
 The [SUPPORT.md](../SUPPORT.md) page has the exact links for each.
 
@@ -24,7 +24,7 @@ No. Emu is an independent open-source plugin for [Claude Code](https://github.co
 
 ## Does Emu transmit any data off my machine?
 
-No. Emu has no outbound network code — every hook and script either writes to stdout (the conversation), to `~/.claude/fae/` (state), or to `stderr` (logs). The claim is verifiable with a single `grep`; see [PRIVACY.md](../PRIVACY.md) for the exact reads/stores/transmits table and the commands to audit yourself.
+No. Emu has no outbound network code — every hook and script either writes to stdout (the conversation), to `~/.claude/emu/` (state), or to `stderr` (logs). The claim is verifiable with a single `grep`; see [PRIVACY.md](../PRIVACY.md) for the exact reads/stores/transmits table and the commands to audit yourself.
 
 ## Can I disable Emu's token-saver compression or dedup?
 

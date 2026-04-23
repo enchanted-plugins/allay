@@ -11,7 +11,7 @@
 #     shared/scripts/skill-scope.sh unregister <skill_id>
 #
 # The context-guard PostToolUse hook reads the currently-active scope and tags
-# every metrics event with it, so /fae:analytics can show who spent what.
+# every metrics event with it, so /emu:analytics can show who spent what.
 #
 # Design notes (why these choices):
 #   - Stored as an array to support nested/concurrent skills — worktrees can run

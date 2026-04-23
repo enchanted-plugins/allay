@@ -1,11 +1,11 @@
 ---
-name: fae:runway
+name: emu:runway
 description: >
   Quick runway check. How many turns until compaction?
   Use when you want a fast answer without full report.
 ---
 
-When the user runs `/fae:runway`:
+When the user runs `/emu:runway`:
 
 1. Read the last 5 entries from `${CLAUDE_PLUGIN_ROOT}/state/metrics.jsonl`.
 2. Calculate average tokens per turn from the recent data.

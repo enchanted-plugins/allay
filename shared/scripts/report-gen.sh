@@ -2,11 +2,11 @@
 # Emu session report generator
 # Generates a text-based session health report.
 # If Python 3 is available, generates a dark-themed PDF report.
-# Not time-critical — called on demand via /fae:report.
+# Not time-critical — called on demand via /emu:report.
 #
 # Usage: bash report-gen.sh <plugins_dir> [output_path]
 #   plugins_dir: path to the plugins/ directory
-#   output_path: optional path for PDF output (default: /tmp/fae-report-<ts>.txt)
+#   output_path: optional path for PDF output (default: /tmp/emu-report-<ts>.txt)
 
 trap 'exit 0' ERR INT TERM
 
@@ -24,7 +24,7 @@ TIMESTAMP=$(date -u +"%Y-%m-%dT%H:%M:%SZ")
 TS_SHORT=$(date -u +"%Y%m%d-%H%M%S")
 
 if [[ -z "$OUTPUT_PATH" ]]; then
-  OUTPUT_PATH="/tmp/fae-report-${TS_SHORT}.txt"
+  OUTPUT_PATH="/tmp/emu-report-${TS_SHORT}.txt"
 fi
 
 # ── Gather metrics from all plugins ──
@@ -136,7 +136,7 @@ cat > "$OUTPUT_PATH" <<REPORT
 
  ── Recommendations ──────────────────
 $(if [[ "$RUNWAY" != "N/A" ]] && [[ "$RUNWAY" -lt 10 ]]; then
-  echo " ⚠ Low runway. Run /fae:checkpoint then /compact."
+  echo " ⚠ Low runway. Run /emu:checkpoint then /compact."
 fi)
 $(if [[ "$DRIFT_ALERTS" -gt 3 ]]; then
   echo " ⚠ High drift count. Consider breaking task into smaller steps."
@@ -163,9 +163,9 @@ LEARNINGS_LOCAL="${PLUGINS_DIR}/context-guard/state/learnings.json"
   else
     printf "%s" "$LEARNINGS_LOCAL"
   fi
-) > /tmp/fae-learnings-path.$$ 2>/dev/null
-LEARNINGS_JSON=$(cat /tmp/fae-learnings-path.$$ 2>/dev/null)
-rm -f /tmp/fae-learnings-path.$$
+) > /tmp/emu-learnings-path.$$ 2>/dev/null
+LEARNINGS_JSON=$(cat /tmp/emu-learnings-path.$$ 2>/dev/null)
+rm -f /tmp/emu-learnings-path.$$
 [[ -z "$LEARNINGS_JSON" ]] && LEARNINGS_JSON="$LEARNINGS_LOCAL"
 if [[ -f "$LEARNINGS_JSON" ]] && jq empty "$LEARNINGS_JSON" >/dev/null 2>&1; then
   LEARN_SESSIONS=$(jq -r '.sessions_recorded // 0' "$LEARNINGS_JSON")

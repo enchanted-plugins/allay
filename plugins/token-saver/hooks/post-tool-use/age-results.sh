@@ -45,7 +45,7 @@ fi
 SESSION_HASH=$(md5sum "${HOOK_TRANSCRIPT_PATH}" 2>/dev/null | cut -c1-8 || echo "fallback-$$")
 
 # ── Call counter file ──
-COUNTER_FILE="/tmp/fae-age-${SESSION_HASH}.count"
+COUNTER_FILE="/tmp/emu-age-${SESSION_HASH}.count"
 touch "$COUNTER_FILE" 2>/dev/null || exit 0
 
 # Increment call count

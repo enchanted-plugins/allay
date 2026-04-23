@@ -90,7 +90,7 @@ ${GIT_LOG:-None}
 ${PROJECT_INSTRUCTIONS:-No CLAUDE.md found}
 
 ## User-Flagged Context
-${REMEMBER_CONTENT:-No items saved. Use /fae:checkpoint <text> to save.}
+${REMEMBER_CONTENT:-No items saved. Use /emu:checkpoint <text> to save.}
 CHECKPOINT
 )
 

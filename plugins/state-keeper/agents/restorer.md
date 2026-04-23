@@ -1,5 +1,5 @@
 ---
-name: fae-restorer
+name: emu-restorer
 description: >
   After compaction, reads checkpoint.md and silently feeds
   context back into the session. Autonomous — does not ask

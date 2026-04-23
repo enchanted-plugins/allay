@@ -50,8 +50,8 @@ The benchmark may **not** cherry-pick. Published numbers come from the median ru
 
 ```bash
 # clone and install
-git clone https://github.com/enchanted-plugins/fae.git
-cd fae
+git clone https://github.com/enchanted-plugins/emu.git
+cd emu
 bash install.sh
 
 # run the benchmark harness against each workload

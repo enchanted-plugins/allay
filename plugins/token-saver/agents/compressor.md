@@ -1,5 +1,5 @@
 ---
-name: fae-compressor
+name: emu-compressor
 description: >
   Background agent that analyzes tool output patterns,
   evaluates compression strategy effectiveness, and logs ratios.

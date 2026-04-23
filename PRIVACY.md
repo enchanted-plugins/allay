@@ -5,7 +5,7 @@ Emu watches your Claude Code session to do its job: runway tracking, drift detec
 ## Principles
 
 1. **Everything Emu does runs locally.** No cloud service, no phone-home, no telemetry.
-2. **Nothing is transmitted off your machine.** Emu has no outbound network code. Every hook and script either writes to stdout (the conversation), to `~/.claude/fae/` (state), or to `stderr` (logs).
+2. **Nothing is transmitted off your machine.** Emu has no outbound network code. Every hook and script either writes to stdout (the conversation), to `~/.claude/emu/` (state), or to `stderr` (logs).
 3. **You can verify every claim on this page.** The source is in this repo; the storage is on your disk; `grep` is enough.
 
 ## What Emu reads
@@ -23,7 +23,7 @@ Concretely: Emu reads the **contents of your conversation**, because that's what
 
 ## What Emu stores
 
-All state lives under `~/.claude/fae/` (or the Claude Code plugin state directory if you've customized it).
+All state lives under `~/.claude/emu/` (or the Claude Code plugin state directory if you've customized it).
 
 | File / dir | Contents | Lifetime |
 |------------|----------|----------|
@@ -33,7 +33,7 @@ All state lives under `~/.claude/fae/` (or the Claude Code plugin state director
 | `dedup/cache.json` | Hashes of recent tool outputs to detect duplicates. | Per-session. |
 | `logs/hooks.log` | Timestamp + event name + session id. **No content.** | Until you delete it. |
 
-**Checkpoints are summary metadata**, not verbatim transcripts. If you want to verify: `cat ~/.claude/fae/checkpoints/*.json` — you'll see the shape; you won't see your prompts.
+**Checkpoints are summary metadata**, not verbatim transcripts. If you want to verify: `cat ~/.claude/emu/checkpoints/*.json` — you'll see the shape; you won't see your prompts.
 
 ## What Emu does not transmit
 
@@ -41,8 +41,8 @@ Emu has **no outbound network code**. To verify:
 
 ```bash
 # grep every shell hook and Python script for network invocations
-grep -rE 'curl|wget|requests|urllib|httpx|socket|nc -' ~/.claude/plugins/fae-*/
-grep -rE 'fetch\(|XMLHttpRequest|WebSocket' ~/.claude/plugins/fae-*/
+grep -rE 'curl|wget|requests|urllib|httpx|socket|nc -' ~/.claude/plugins/emu-*/
+grep -rE 'fetch\(|XMLHttpRequest|WebSocket' ~/.claude/plugins/emu-*/
 ```
 
 Both should return zero matches.
@@ -74,14 +74,14 @@ Same pattern for any sub-plugin. Disabling `context-guard` turns off runway + dr
 ## Clearing all state
 
 ```bash
-rm -rf ~/.claude/fae/
+rm -rf ~/.claude/emu/
 ```
 
 No side effects, no re-downloads, no "would you like to keep…" prompts. The next session starts clean.
 
 ## What to do if you suspect a leak
 
-1. Check `~/.claude/fae/logs/hooks.log` for unexpected events.
+1. Check `~/.claude/emu/logs/hooks.log` for unexpected events.
 2. Run the two `grep` commands above against the installed plugin directory.
 3. If anything looks off, file a private security advisory — see [SECURITY.md](SECURITY.md).
 

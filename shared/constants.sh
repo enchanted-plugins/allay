@@ -39,5 +39,5 @@ FAE_SESSION_MARKER_FILE="state/.session"
 # Spec: https://specifications.freedesktop.org/basedir-spec/basedir-spec-latest.html
 FAE_XDG_STATE_HOME="${XDG_STATE_HOME:-${HOME}/.local/state}"
 FAE_XDG_DATA_HOME="${XDG_DATA_HOME:-${HOME}/.local/share}"
-FAE_GLOBAL_STATE_SUBDIR="fae"
-FAE_GLOBAL_DATA_SUBDIR="fae"
+FAE_GLOBAL_STATE_SUBDIR="emu"
+FAE_GLOBAL_DATA_SUBDIR="emu"

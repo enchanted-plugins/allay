@@ -71,8 +71,8 @@ fi
 [[ -z "$ACTIVE_SKILL" ]] && ACTIVE_SKILL="manual"
 
 # ── Session cache and cooldown files ──
-CACHE_FILE="/tmp/fae-drift-${SESSION_HASH}.jsonl"
-COOLDOWN_FILE="/tmp/fae-drift-cooldown-${SESSION_HASH}"
+CACHE_FILE="/tmp/emu-drift-${SESSION_HASH}.jsonl"
+COOLDOWN_FILE="/tmp/emu-drift-cooldown-${SESSION_HASH}"
 STATE_DIR="${PLUGIN_ROOT}/state"
 
 # Create cache if missing
@@ -248,7 +248,7 @@ case "$TOOL_NAME" in
 
         if [[ "$WRITE_WITH_CHANGE" -eq 0 ]]; then
           DRIFT_PATTERN="read_loop"
-          ALERT_MSG="Drift Alert: ${FILE_PATH} read ${READ_COUNT}x without changes. Claude may be stuck re-reading without progress. → Reframe the problem or /fae:checkpoint before /compact."
+          ALERT_MSG="Drift Alert: ${FILE_PATH} read ${READ_COUNT}x without changes. Claude may be stuck re-reading without progress. → Reframe the problem or /emu:checkpoint before /compact."
         fi
       fi
     fi

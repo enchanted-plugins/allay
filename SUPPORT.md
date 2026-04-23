@@ -6,11 +6,11 @@ Short version: **pick the right channel, and you'll get an answer faster.**
 
 | You have a… | Go to |
 |-------------|-------|
-| Security vulnerability | [Private security advisory](https://github.com/enchanted-plugins/fae/security/advisories/new) — **never** a public issue. See [SECURITY.md](SECURITY.md). |
-| Reproducible bug | [Bug report issue](https://github.com/enchanted-plugins/fae/issues/new?template=bug_report.md). Include repro steps, versions, exact error. |
-| Concrete feature proposal | [Feature request issue](https://github.com/enchanted-plugins/fae/issues/new?template=feature_request.md). Half-formed ideas → Discussions first. |
-| Usage question | [Discussions → Q&A](https://github.com/enchanted-plugins/fae/discussions/categories/q-a) |
-| Show-and-tell, idea, or discussion | [Discussions → Ideas / Show & Tell](https://github.com/enchanted-plugins/fae/discussions) |
+| Security vulnerability | [Private security advisory](https://github.com/enchanted-plugins/emu/security/advisories/new) — **never** a public issue. See [SECURITY.md](SECURITY.md). |
+| Reproducible bug | [Bug report issue](https://github.com/enchanted-plugins/emu/issues/new?template=bug_report.md). Include repro steps, versions, exact error. |
+| Concrete feature proposal | [Feature request issue](https://github.com/enchanted-plugins/emu/issues/new?template=feature_request.md). Half-formed ideas → Discussions first. |
+| Usage question | [Discussions → Q&A](https://github.com/enchanted-plugins/emu/discussions/categories/q-a) |
+| Show-and-tell, idea, or discussion | [Discussions → Ideas / Show & Tell](https://github.com/enchanted-plugins/emu/discussions) |
 | Wanted something that already exists | Read the docs list below first. |
 
 ## Before filing

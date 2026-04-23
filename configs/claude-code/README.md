@@ -8,12 +8,12 @@ After cloning the Emu repo, add plugins to Claude Code:
 
 ```bash
 # Add the marketplace (recommended)
-/plugin marketplace add /path/to/fae
+/plugin marketplace add /path/to/emu
 
 # Or add individual plugins
-/plugin add /path/to/fae/plugins/context-guard
-/plugin add /path/to/fae/plugins/state-keeper
-/plugin add /path/to/fae/plugins/token-saver
+/plugin add /path/to/emu/plugins/context-guard
+/plugin add /path/to/emu/plugins/state-keeper
+/plugin add /path/to/emu/plugins/token-saver
 ```
 
 ## Recommended Order

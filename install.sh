@@ -3,8 +3,8 @@
 # meta-plugin pulls them all in via one dependency-resolution pass.
 set -euo pipefail
 
-REPO="https://github.com/enchanted-plugins/fae"
-FAE_DIR="${HOME}/.claude/plugins/fae"
+REPO="https://github.com/enchanted-plugins/emu"
+FAE_DIR="${HOME}/.claude/plugins/emu"
 
 step() { printf "\n\033[1;36m▸ %s\033[0m\n" "$*"; }
 ok()   { printf "  \033[32m✓\033[0m %s\n" "$*"; }
@@ -37,13 +37,13 @@ cat <<'EOF'
 
   Finish in Claude Code with TWO commands:
 
-    /plugin marketplace add enchanted-plugins/fae
-    /plugin install full@fae
+    /plugin marketplace add enchanted-plugins/emu
+    /plugin install full@emu
 
   That installs all 3 plugins via dependency resolution. To cherry-pick
-  a single plugin instead, use e.g. `/plugin install fae-context-guard@fae`.
+  a single plugin instead, use e.g. `/plugin install emu-context-guard@emu`.
 
   Verify with:   /plugin list
-  Expected:      full + 3 plugins installed under the fae marketplace.
+  Expected:      full + 3 plugins installed under the emu marketplace.
 
 EOF

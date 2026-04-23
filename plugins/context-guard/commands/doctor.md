@@ -1,9 +1,9 @@
 ---
-name: fae:doctor
+name: emu:doctor
 description: Diagnostic self-check for all Emu plugins.
 ---
 
-When the user runs `/fae:doctor`, perform a diagnostic check on the Emu installation:
+When the user runs `/emu:doctor`, perform a diagnostic check on the Emu installation:
 
 ## Checks
 

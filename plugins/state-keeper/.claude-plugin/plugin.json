@@ -1,5 +1,5 @@
 {
-  "name": "fae-state-keeper",
+  "name": "emu-state-keeper",
   "description": "Preserves Claude Code context across compactions. Auto-restores after compaction.",
   "version": "2.0.0",
   "author": {

@@ -5,8 +5,8 @@ Emu is the session companion: it watches your context window, tracks token spend
 ## 1. Install (60 seconds)
 
 ```
-/plugin marketplace add enchanted-plugins/fae
-/plugin install full@fae
+/plugin marketplace add enchanted-plugins/emu
+/plugin install full@emu
 /plugin list
 ```
 
@@ -46,7 +46,7 @@ When the context window gets tight, save a checkpoint:
 /checkpoint
 ```
 
-`state-keeper` writes the session's goal, open decisions, and next step to `~/.claude/fae/checkpoints/`. After `/clear` or a restart:
+`state-keeper` writes the session's goal, open decisions, and next step to `~/.claude/emu/checkpoints/`. After `/clear` or a restart:
 
 ```
 /checkpoint-show

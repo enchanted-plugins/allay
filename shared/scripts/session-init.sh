@@ -9,8 +9,8 @@
 #   FAE_IS_WORKTREE       "1" if running inside a linked worktree, "0" on main
 #   FAE_SESSION_ID        12-hex-char session id, persisted in plugin state/.session
 #   FAE_HOST              short hostname
-#   FAE_GLOBAL_STATE_DIR  $XDG_STATE_HOME/fae/<repo_id>/  (metrics shards live here)
-#   FAE_GLOBAL_DATA_DIR   $XDG_DATA_HOME/fae/<repo_id>/   (learnings.json lives here)
+#   FAE_GLOBAL_STATE_DIR  $XDG_STATE_HOME/emu/<repo_id>/  (metrics shards live here)
+#   FAE_GLOBAL_DATA_DIR   $XDG_DATA_HOME/emu/<repo_id>/   (learnings.json lives here)
 #
 # Contract:
 #   - Never prints to stdout/stderr. Exports vars.

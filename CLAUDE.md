@@ -41,8 +41,8 @@ Markers: **[H]** hook-enforced (deterministic) · **[A]** advisory (relies on yo
 1. **[H] IMPORTANT — Respect the delta.** When token-saver returns a unified diff instead of full file contents, work from the diff. Do not re-invoke Read to get the full file; the block was intentional (A5/A6).
 2. **[H] Respect duplicate blocks.** If a Read is blocked as duplicate, use your prior read. Do not obfuscate the path to bypass the TTL.
 3. **[A] YOU MUST acknowledge `[Emu]` stderr.** Name the pattern (read loop / edit-revert / fail loop) or the runway alert, then change approach. Silence after a drift alert is a contract violation.
-4. **[A] Checkpoint when runway < 8.** Offer `/fae:checkpoint <short note>` with the current sub-task state before compaction eats the context.
-5. **[A] Honest numbers.** When producing `/fae:report`, surface only what `metrics.jsonl` contains. Never infer, smooth, or round up savings.
+4. **[A] Checkpoint when runway < 8.** Offer `/emu:checkpoint <short note>` with the current sub-task state before compaction eats the context.
+5. **[A] Honest numbers.** When producing `/emu:report`, surface only what `metrics.jsonl` contains. Never infer, smooth, or round up savings.
 6. **[A] ESCALATE on stale metrics.** If `metrics.jsonl` is empty or malformed, report "no data" — do not fabricate a report shell.
 7. **[A] ESCALATE on conflicting drift + runway.** If the session shows drift AND runway < 5, pause and summarize both before the developer loses context.
 
@@ -62,7 +62,7 @@ Markers: **[H]** hook-enforced (deterministic) · **[A]** advisory (relies on yo
 |--------|-------------------|--------|
 | > 20 turns | velocity window stable | Work normally |
 | 8–20 turns | — | Wrap current sub-task cleanly |
-| < 8 turns | — | Run `/fae:checkpoint` before continuing |
+| < 8 turns | — | Run `/emu:checkpoint` before continuing |
 
 ## State paths
 
@@ -87,6 +87,6 @@ Emu ships an output-efficiency skill: `off`, `lite`, `full`, `ultra`. Match your
 ## Anti-patterns
 
 - **Prefix bypass.** Using `FULL:` to dodge A3 compression when the developer did not request raw output. The bypass exists for rare debugging, not default behavior.
-- **Silent savings inflation.** Reporting `/fae:report` totals that don't match `metrics.jsonl` line counts. Breaks the honest-numbers contract, which is the product.
+- **Silent savings inflation.** Reporting `/emu:report` totals that don't match `metrics.jsonl` line counts. Breaks the honest-numbers contract, which is the product.
 - **Checkpoint drift.** Writing to `checkpoint.md` outside the PreCompact hook. The atomic rename protocol (A4) is the only safe write path.
 - **Drift-alert hand-wave.** Acknowledging the alert then continuing the same action. The cooldown exists so repeated alerts mean something.
