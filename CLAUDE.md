@@ -55,7 +55,7 @@ Markers: **[H]** hook-enforced (deterministic) · **[A]** advisory (relies on yo
 | EDIT_REVERT | file edited then reverted to prior hash | Step back; the fix is not landing |
 | TEST_FAIL_LOOP | same test fails ≥ 3× | Change approach; do not re-run |
 
-5-turn cooldown. Thresholds: `FAE_DRIFT_READ_THRESHOLD`, `FAE_DRIFT_FAIL_THRESHOLD`.
+5-turn cooldown. Thresholds: `EMU_DRIFT_READ_THRESHOLD`, `EMU_DRIFT_FAIL_THRESHOLD`.
 
 ### Runway (A2)
 | Runway | Confidence source | Action |

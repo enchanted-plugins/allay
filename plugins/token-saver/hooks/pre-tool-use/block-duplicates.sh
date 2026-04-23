@@ -81,7 +81,7 @@ if [[ -f "$CACHE_FILE" ]]; then
     LAST_TS=$(printf "%s" "$LAST_ENTRY" | jq -r '.ts // "0"' 2>/dev/null)
     ELAPSED=$(( NOW - LAST_TS ))
 
-    if [[ "$ELAPSED" -lt "$FAE_DUPLICATE_TTL_SECONDS" ]]; then
+    if [[ "$ELAPSED" -lt "$EMU_DUPLICATE_TTL_SECONDS" ]]; then
       if [[ "$CURRENT_HASH" == "$LAST_HASH" ]]; then
         # ── BLOCK: Same hash, within TTL ──
         PREVIEW=""

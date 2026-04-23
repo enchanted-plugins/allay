@@ -24,7 +24,7 @@ source "${SHARED_DIR}/sanitize.sh"
 source "${SHARED_DIR}/metrics.sh"
 # A9 — resolve repo_id, worktree, session_id, global XDG dirs.
 # Sourced (not invoked) so exports propagate into this shell.
-export FAE_PLUGIN_STATE_DIR="${PLUGIN_ROOT}/state"
+export EMU_PLUGIN_STATE_DIR="${PLUGIN_ROOT}/state"
 # shellcheck source=../../../../shared/scripts/session-init.sh
 source "${SHARED_DIR}/scripts/session-init.sh" || true
 
@@ -60,11 +60,11 @@ if [[ -x "$SKILL_SCOPE_SCRIPT" ]] || [[ -f "$SKILL_SCOPE_SCRIPT" ]]; then
   while IFS='=' read -r _k _v; do
     _v="${_v%$'\r'}"  # defensive: strip CR if any producer leaked it
     case "$_k" in
-      FAE_SCOPE_SKILL)  ACTIVE_SKILL="${_v:-manual}" ;;
-      FAE_SCOPE_PLUGIN) ACTIVE_PLUGIN="$_v" ;;
-      FAE_SCOPE_ID)     ACTIVE_SCOPE_ID="$_v" ;;
-      FAE_SCOPE_PARENT) ACTIVE_SCOPE_PARENT="$_v" ;;
-      FAE_SCOPE_DEPTH)  ACTIVE_SCOPE_DEPTH="${_v:-0}" ;;
+      EMU_SCOPE_SKILL)  ACTIVE_SKILL="${_v:-manual}" ;;
+      EMU_SCOPE_PLUGIN) ACTIVE_PLUGIN="$_v" ;;
+      EMU_SCOPE_ID)     ACTIVE_SCOPE_ID="$_v" ;;
+      EMU_SCOPE_PARENT) ACTIVE_SCOPE_PARENT="$_v" ;;
+      EMU_SCOPE_DEPTH)  ACTIVE_SCOPE_DEPTH="${_v:-0}" ;;
     esac
   done < <(bash "$SKILL_SCOPE_SCRIPT" current-env 2>/dev/null || true)
 fi
@@ -167,12 +167,12 @@ log_metric "${STATE_DIR}/metrics.jsonl" "$TURN_METRIC"
 #    parent_scope_id, depth, tool, token_estimate}
 SKILL_ROW=$(jq -cn \
   --arg ts "$TIMESTAMP" \
-  --arg session_id "${FAE_SESSION_ID:-}" \
-  --arg repo_id "${FAE_REPO_ID:-}" \
-  --arg worktree "${FAE_WORKTREE_REL:-.}" \
-  --arg worktree_path "${FAE_WORKTREE_PATH:-}" \
+  --arg session_id "${EMU_SESSION_ID:-}" \
+  --arg repo_id "${EMU_REPO_ID:-}" \
+  --arg worktree "${EMU_WORKTREE_REL:-.}" \
+  --arg worktree_path "${EMU_WORKTREE_PATH:-}" \
   --arg cwd "${HOOK_CWD:-$PWD}" \
-  --arg host "${FAE_HOST:-}" \
+  --arg host "${EMU_HOST:-}" \
   --arg skill "$ACTIVE_SKILL" \
   --arg plugin "$ACTIVE_PLUGIN" \
   --arg scope_id "$ACTIVE_SCOPE_ID" \
@@ -194,13 +194,13 @@ fi
 # Global cross-worktree shard. Per-PID filename avoids concurrent-append
 # interleaving on filesystems without append-atomicity (Windows, NFS).
 # Readers glob all *.jsonl shards under the repo_id dir and sort by ts.
-if [[ -n "${FAE_GLOBAL_STATE_DIR:-}" ]]; then
-  mkdir -p "$FAE_GLOBAL_STATE_DIR" 2>/dev/null || true
-  GLOBAL_SHARD="${FAE_GLOBAL_STATE_DIR}/skill-metrics-global.$$.jsonl"
-  # Rotate at 10MB (matches FAE_MAX_METRICS_BYTES).
+if [[ -n "${EMU_GLOBAL_STATE_DIR:-}" ]]; then
+  mkdir -p "$EMU_GLOBAL_STATE_DIR" 2>/dev/null || true
+  GLOBAL_SHARD="${EMU_GLOBAL_STATE_DIR}/skill-metrics-global.$$.jsonl"
+  # Rotate at 10MB (matches EMU_MAX_METRICS_BYTES).
   if [[ -f "$GLOBAL_SHARD" ]]; then
     _g_size=$(wc -c < "$GLOBAL_SHARD" 2>/dev/null | tr -d ' ')
-    if [[ "${_g_size:-0}" -gt "${FAE_MAX_METRICS_BYTES:-10485760}" ]]; then
+    if [[ "${_g_size:-0}" -gt "${EMU_MAX_METRICS_BYTES:-10485760}" ]]; then
       tail -n 1000 "$GLOBAL_SHARD" > "${GLOBAL_SHARD}.rot" 2>/dev/null \
         && mv "${GLOBAL_SHARD}.rot" "$GLOBAL_SHARD"
     fi
@@ -219,7 +219,7 @@ if [[ -f "$COOLDOWN_FILE" ]]; then
 fi
 
 # Only apply cooldown if an alert was actually fired before (LAST_ALERT_TURN > 0)
-if [[ "$LAST_ALERT_TURN" -gt 0 ]] && [[ $((TURN - LAST_ALERT_TURN)) -lt "$FAE_DRIFT_COOLDOWN_TURNS" ]]; then
+if [[ "$LAST_ALERT_TURN" -gt 0 ]] && [[ $((TURN - LAST_ALERT_TURN)) -lt "$EMU_DRIFT_COOLDOWN_TURNS" ]]; then
   exit 0
 fi
 
@@ -238,7 +238,7 @@ case "$TOOL_NAME" in
         | wc -l | tr -d '[:space:]')
       READ_COUNT=${READ_COUNT:-0}
 
-      if [[ "$READ_COUNT" -ge "$FAE_DRIFT_READ_THRESHOLD" ]]; then
+      if [[ "$READ_COUNT" -ge "$EMU_DRIFT_READ_THRESHOLD" ]]; then
         # Check if there's a Write with a DIFFERENT hash since the first Read
         WRITE_WITH_CHANGE=$(grep -E '"tool":"(Write|Edit)"' "$CACHE_FILE" 2>/dev/null \
           | grep -F "\"$FILE_PATH\"" 2>/dev/null \
@@ -297,7 +297,7 @@ case "$TOOL_NAME" in
         FAIL_COUNT=${FAIL_COUNT:-0}
       fi
 
-      if [[ "$FAIL_COUNT" -ge "$FAE_DRIFT_FAIL_THRESHOLD" ]]; then
+      if [[ "$FAIL_COUNT" -ge "$EMU_DRIFT_FAIL_THRESHOLD" ]]; then
         DRIFT_PATTERN="test_fail_loop"
         ALERT_MSG="Drift Alert: '${CMD_BASE}' failed ${FAIL_COUNT}x this session. Retrying without changes won't help. → Read the error, change the approach."
       fi

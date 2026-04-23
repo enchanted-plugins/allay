@@ -267,7 +267,7 @@ Transitions on tool name + file hash + exit code.
 
 <p align="center"><img src="docs/assets/math/a1-drift.svg" alt="P(drift | s1, ..., sn) = 1 if count of repeated states >= theta; else 0"></p>
 
-Where θ = 3 (configurable via `FAE_DRIFT_READ_THRESHOLD`).
+Where θ = 3 (configurable via `EMU_DRIFT_READ_THRESHOLD`).
 
 ### A2. Linear Runway Forecasting
 
@@ -329,7 +329,7 @@ has correct parent/child lineage on every event.
 <p align="center"><img src="docs/assets/math/a8-attribution.svg" alt="attr(c) = top-of-stack skill if any alive and within TTL; otherwise 'manual'"></p>
 
 Where $S$ is the stack of active skills (LIFO), $s_{\text{top}}$ is the most
-recent, and $\text{TTL} = 3600\text{s}$ (configurable via `FAE_SKILL_TTL`).
+recent, and $\text{TTL} = 3600\text{s}$ (configurable via `EMU_SKILL_TTL`).
 Scopes are keyed by 16-hex-char invocation ids — not PIDs — so entries survive
 PID reuse (systemd `InvocationID` pattern). Eviction on every read: stale
 entries (dead PID or expired TTL) are purged before the "current" scope is returned.

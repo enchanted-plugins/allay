@@ -17,7 +17,7 @@ STATE_DIR="${REPO_ROOT}/plugins/context-guard/state"
 
 # Use an isolated state dir so we don't step on developer's live data.
 ISO_DIR=$(mktemp -d)
-export FAE_ACTIVE_SKILLS_DIR="$ISO_DIR/active-skills"
+export EMU_ACTIVE_SKILLS_DIR="$ISO_DIR/active-skills"
 
 cleanup() {
   rm -rf "$ISO_DIR" 2>/dev/null || true

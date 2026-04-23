@@ -8,7 +8,7 @@ REPO_ROOT="${SCRIPT_DIR}/../.."
 SKILL_SCOPE="${REPO_ROOT}/shared/scripts/skill-scope.sh"
 
 ISO=$(mktemp -d)
-export FAE_ACTIVE_SKILLS_DIR="$ISO"
+export EMU_ACTIVE_SKILLS_DIR="$ISO"
 
 cleanup() { rm -rf "$ISO" 2>/dev/null || true; }
 trap cleanup EXIT
@@ -70,24 +70,24 @@ fi
 
 # Parent
 eval "$(bash "$SKILL_SCOPE" register wixie:converge wixie)"
-if [[ -z "${FAE_SCOPE_ID:-}" ]]; then
-  echo "FAIL: register did not emit FAE_SCOPE_ID"
+if [[ -z "${EMU_SCOPE_ID:-}" ]]; then
+  echo "FAIL: register did not emit EMU_SCOPE_ID"
   exit 1
 fi
-if [[ "${FAE_SCOPE_DEPTH:-}" != "0" ]]; then
-  echo "FAIL: parent depth should be 0, got '${FAE_SCOPE_DEPTH}'"
+if [[ "${EMU_SCOPE_DEPTH:-}" != "0" ]]; then
+  echo "FAIL: parent depth should be 0, got '${EMU_SCOPE_DEPTH}'"
   exit 1
 fi
-PARENT_ID="$FAE_SCOPE_ID"
+PARENT_ID="$EMU_SCOPE_ID"
 
 # Child inherits parent via env
 eval "$(bash "$SKILL_SCOPE" register crow:review crow)"
-if [[ "${FAE_SCOPE_DEPTH:-}" != "1" ]]; then
-  echo "FAIL: child depth should be 1, got '${FAE_SCOPE_DEPTH}'"
+if [[ "${EMU_SCOPE_DEPTH:-}" != "1" ]]; then
+  echo "FAIL: child depth should be 1, got '${EMU_SCOPE_DEPTH}'"
   exit 1
 fi
-if [[ "${FAE_SCOPE_PARENT:-}" != "$PARENT_ID" ]]; then
-  echo "FAIL: child parent should be '$PARENT_ID', got '${FAE_SCOPE_PARENT}'"
+if [[ "${EMU_SCOPE_PARENT:-}" != "$PARENT_ID" ]]; then
+  echo "FAIL: child parent should be '$PARENT_ID', got '${EMU_SCOPE_PARENT}'"
   exit 1
 fi
 

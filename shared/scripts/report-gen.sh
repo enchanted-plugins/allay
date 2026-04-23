@@ -155,11 +155,11 @@ fi)
 $(# A9: prefer global XDG learnings, fall back to the legacy per-plugin path.
 LEARNINGS_LOCAL="${PLUGINS_DIR}/context-guard/state/learnings.json"
 (
-  FAE_INIT_CWD="$PLUGINS_DIR"
+  EMU_INIT_CWD="$PLUGINS_DIR"
   _si="$(dirname "$0")/session-init.sh"
   [[ -f "$_si" ]] && source "$_si" >/dev/null 2>&1 || true
-  if [[ -n "${FAE_GLOBAL_DATA_DIR:-}" ]] && [[ -f "${FAE_GLOBAL_DATA_DIR}/learnings.json" ]]; then
-    printf "%s" "${FAE_GLOBAL_DATA_DIR}/learnings.json"
+  if [[ -n "${EMU_GLOBAL_DATA_DIR:-}" ]] && [[ -f "${EMU_GLOBAL_DATA_DIR}/learnings.json" ]]; then
+    printf "%s" "${EMU_GLOBAL_DATA_DIR}/learnings.json"
   else
     printf "%s" "$LEARNINGS_LOCAL"
   fi

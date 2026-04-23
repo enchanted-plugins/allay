@@ -2,8 +2,8 @@
 # Test: A9 — global skill-metrics-global.*.jsonl contains entries from
 # multiple worktrees, keyed on the same repo_id.
 #
-# Simulates two worktrees of the same repo by overriding FAE_INIT_CWD +
-# FAE_WORKTREE_REL via direct env exports into the hook. Verifies the global
+# Simulates two worktrees of the same repo by overriding EMU_INIT_CWD +
+# EMU_WORKTREE_REL via direct env exports into the hook. Verifies the global
 # dir receives rows from both worktree identities and groups correctly by repo_id.
 set -euo pipefail
 
@@ -38,13 +38,13 @@ INPUT=$(jq -n --arg t "$MT" --arg f "$TF" '{transcript_path:$t, cwd:"/tmp", tool
 # ── Fire from "main" worktree ──
 printf "%s" "$INPUT" | \
   CLAUDE_PLUGIN_ROOT="${REPO_ROOT}/plugins/context-guard" \
-  FAE_REPO_ID="deadbeef1234" \
-  FAE_WORKTREE_PATH="/repo/main" \
-  FAE_WORKTREE_REL="." \
-  FAE_MAIN_WORKTREE="/repo/main" \
-  FAE_IS_WORKTREE="0" \
-  FAE_SESSION_ID="sessmain0000" \
-  FAE_GLOBAL_STATE_DIR="${FAKE_XDG}/emu/deadbeef1234" \
+  EMU_REPO_ID="deadbeef1234" \
+  EMU_WORKTREE_PATH="/repo/main" \
+  EMU_WORKTREE_REL="." \
+  EMU_MAIN_WORKTREE="/repo/main" \
+  EMU_IS_WORKTREE="0" \
+  EMU_SESSION_ID="sessmain0000" \
+  EMU_GLOBAL_STATE_DIR="${FAKE_XDG}/emu/deadbeef1234" \
   bash "$HOOK" >/dev/null 2>/dev/null || true
 
 # ── Fire from "worktree" (apps/sigil) ──
@@ -56,13 +56,13 @@ INPUT2=$(jq -n --arg t "$MT2" --arg f "$TF" '{transcript_path:$t, cwd:"/tmp", to
 
 printf "%s" "$INPUT2" | \
   CLAUDE_PLUGIN_ROOT="${REPO_ROOT}/plugins/context-guard" \
-  FAE_REPO_ID="deadbeef1234" \
-  FAE_WORKTREE_PATH="/repo/worktrees/sigil" \
-  FAE_WORKTREE_REL="apps/sigil" \
-  FAE_MAIN_WORKTREE="/repo/main" \
-  FAE_IS_WORKTREE="1" \
-  FAE_SESSION_ID="sessworktree" \
-  FAE_GLOBAL_STATE_DIR="${FAKE_XDG}/emu/deadbeef1234" \
+  EMU_REPO_ID="deadbeef1234" \
+  EMU_WORKTREE_PATH="/repo/worktrees/sigil" \
+  EMU_WORKTREE_REL="apps/sigil" \
+  EMU_MAIN_WORKTREE="/repo/main" \
+  EMU_IS_WORKTREE="1" \
+  EMU_SESSION_ID="sessworktree" \
+  EMU_GLOBAL_STATE_DIR="${FAKE_XDG}/emu/deadbeef1234" \
   bash "$HOOK" >/dev/null 2>/dev/null || true
 
 rm -f "$MT2"

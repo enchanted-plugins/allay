@@ -4,7 +4,7 @@
 set -euo pipefail
 
 REPO="https://github.com/enchanted-plugins/emu"
-FAE_DIR="${HOME}/.claude/plugins/emu"
+EMU_DIR="${HOME}/.claude/plugins/emu"
 
 step() { printf "\n\033[1;36m▸ %s\033[0m\n" "$*"; }
 ok()   { printf "  \033[32m✓\033[0m %s\n" "$*"; }
@@ -14,17 +14,17 @@ step "Emu installer"
 # 1. Clone (or update) the monorepo so shared/*.sh is available locally.
 #    Plugins themselves are served via the marketplace command below —
 #    the clone is just for supporting scripts.
-if [[ -d "$FAE_DIR/.git" ]]; then
-  git -C "$FAE_DIR" pull --ff-only --quiet
-  ok "Updated existing clone at $FAE_DIR"
+if [[ -d "$EMU_DIR/.git" ]]; then
+  git -C "$EMU_DIR" pull --ff-only --quiet
+  ok "Updated existing clone at $EMU_DIR"
 else
-  git clone --depth 1 --quiet "$REPO" "$FAE_DIR"
-  ok "Cloned to $FAE_DIR"
+  git clone --depth 1 --quiet "$REPO" "$EMU_DIR"
+  ok "Cloned to $EMU_DIR"
 fi
 
 # 2. Ensure hook scripts are executable (fresh clones on some filesystems lose +x).
-chmod +x "$FAE_DIR"/plugins/*/hooks/*/*.sh 2>/dev/null || true
-chmod +x "$FAE_DIR"/shared/*.sh 2>/dev/null || true
+chmod +x "$EMU_DIR"/plugins/*/hooks/*/*.sh 2>/dev/null || true
+chmod +x "$EMU_DIR"/shared/*.sh 2>/dev/null || true
 ok "Hook scripts marked executable"
 
 cat <<'EOF'
