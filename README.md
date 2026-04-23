@@ -462,7 +462,7 @@ See [CONTRIBUTING.md](CONTRIBUTING.md)
 If you use this project in research or derivative work, please cite it:
 
 ```bibtex
-@software{fae_2026,
+@software{emu_2026,
   title = {Emu},
   author = {{Klaiderman}},
   year = {2026},
