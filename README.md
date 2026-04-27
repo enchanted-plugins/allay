@@ -1,5 +1,9 @@
 # Emu
 
+<p align="center">
+  <img src="docs/assets/social-preview.jpg" alt="Emu mascot" width="1280">
+</p>
+
 <p>
   <a href="LICENSE"><img alt="License: MIT" src="https://img.shields.io/badge/License-MIT-3fb950?style=for-the-badge"></a>
   <img alt="3 plugins" src="https://img.shields.io/badge/Plugins-3-bc8cff?style=for-the-badge">
