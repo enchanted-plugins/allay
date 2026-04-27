@@ -18,6 +18,12 @@ The context health platform that learns what wastes your tokens — and stops it
 > 40 minutes into a session, Emu told me Claude had been editing and reverting
 > the same file for 12 minutes. I didn't notice. It did.
 
+## TL;DR
+
+**In plain English:** Claude can silently spin in circles — reading the same file over and over, or failing the same test repeatedly — burning through your context budget without making any progress, and you won't notice until the session dies.
+
+**Technically:** A1 Markov Drift Detection classifies turn sequences into READ_LOOP / EDIT_REVERT / TEST_FAIL_LOOP patterns against a 5-turn cooldown window; A2 Linear Runway Forecasting estimates remaining turns to compaction with a ±CI band. Context savings are recorded per strategy in `metrics.jsonl` and accumulated cross-session via A7 Exponential Strategy Averaging — every advisory cites observed pattern, not inferred intent.
+
 ---
 
 ## Origin
