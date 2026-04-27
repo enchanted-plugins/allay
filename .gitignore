@@ -35,3 +35,7 @@ Thumbs.db
 docs/assets/node_modules/
 docs/assets/package.json
 docs/assets/package-lock.json
+
+# Python bytecode
+__pycache__/
+*.pyc
