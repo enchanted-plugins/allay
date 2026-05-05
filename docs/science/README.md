@@ -116,4 +116,4 @@ Derives a stable repository ID from the first commit hash (git rev-list --max-pa
 
 ---
 
-*Every formula maps to executable code in the enchanted-plugins ecosystem. The math runs.*
+*Every formula maps to executable code in the enchanter-ai ecosystem. The math runs.*
