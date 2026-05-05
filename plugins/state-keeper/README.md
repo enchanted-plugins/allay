@@ -7,7 +7,7 @@
 Part of the [Emu](../..) bundle. The simplest install is the `full` meta-plugin, which pulls in all 3 Emu plugins via dependency resolution:
 
 ```
-/plugin marketplace add enchanted-plugins/emu
+/plugin marketplace add enchanter-ai/emu
 /plugin install full@emu
 ```
 

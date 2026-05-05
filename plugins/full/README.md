@@ -5,7 +5,7 @@
 This plugin has no hooks, skills, or agents of its own. It exists so you can install the whole 3-plugin platform with one command:
 
 ```
-/plugin marketplace add enchanted-plugins/emu
+/plugin marketplace add enchanter-ai/emu
 /plugin install full@emu
 ```
 

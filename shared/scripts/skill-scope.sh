@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # Emu A8 — Skill-Scoped Attribution
 #
-# Shared registration API for any enchanted-plugins skill. When a skill opens
+# Shared registration API for any enchanter-ai skill. When a skill opens
 # (e.g. /wixie:converge begins its 100-iteration loop), it calls:
 #
 #     shared/scripts/skill-scope.sh register <skill_id> <plugin_name>

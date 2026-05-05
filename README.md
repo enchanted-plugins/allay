@@ -13,7 +13,7 @@
   <a href="https://www.repostatus.org/#active"><img alt="Project Status: Active" src="https://www.repostatus.org/badges/latest/active.svg"></a>
 </p>
 
-> An @enchanted-plugins product — algorithm-driven, agent-managed, self-learning.
+> An @enchanter-ai product — algorithm-driven, agent-managed, self-learning.
 
 The context health platform that learns what wastes your tokens — and stops it.
 
@@ -177,7 +177,7 @@ Emu ships as 3 plugins cooperating across PreToolUse / PostToolUse / PreCompact.
 **In Claude Code** (recommended):
 
 ```
-/plugin marketplace add enchanted-plugins/emu
+/plugin marketplace add enchanter-ai/emu
 /plugin install full@emu
 ```
 
@@ -188,7 +188,7 @@ Claude Code resolves the dependency list and installs all 3 plugins. Verify with
 **Via shell** (also installs `shared/*.sh` locally so hooks work offline):
 
 ```bash
-bash <(curl -s https://raw.githubusercontent.com/enchanted-plugins/emu/main/install.sh)
+bash <(curl -s https://raw.githubusercontent.com/enchanter-ai/emu/main/install.sh)
 ```
 
 ## Quickstart
@@ -261,7 +261,7 @@ $XDG_DATA_HOME/emu/<repo_id>/        # A9 — long-lived learnings
 
 ## Roadmap
 
-Tracked in [docs/ROADMAP.md](docs/ROADMAP.md) and the shared [ecosystem map](docs/ecosystem.md). For upcoming work specific to Emu, see issues tagged [roadmap](https://github.com/enchanted-plugins/emu/labels/roadmap).
+Tracked in [docs/ROADMAP.md](docs/ROADMAP.md) and the shared [ecosystem map](docs/ecosystem.md). For upcoming work specific to Emu, see issues tagged [roadmap](https://github.com/enchanter-ai/emu/labels/roadmap).
 
 ## The Science Behind Emu
 
@@ -478,7 +478,7 @@ If you use this project in research or derivative work, please cite it:
   title = {Emu},
   author = {{Klaiderman}},
   year = {2026},
-  url = {https://github.com/enchanted-plugins/emu}
+  url = {https://github.com/enchanter-ai/emu}
 }
 ```
 

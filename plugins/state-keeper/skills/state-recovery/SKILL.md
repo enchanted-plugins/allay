@@ -1,6 +1,7 @@
 ---
 name: state-recovery
 description: >
+  Reconstructs session working state from the last saved checkpoint and remember.md.
   Use immediately after compaction when context is lost.
   Auto-triggers when: files being edited are unknown,
   project instructions are unclear, or user says

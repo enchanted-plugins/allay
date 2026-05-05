@@ -7,7 +7,7 @@
 Part of the [Emu](../..) bundle. The simplest install is the `full` meta-plugin, which pulls in all 3 Emu plugins via dependency resolution:
 
 ```
-/plugin marketplace add enchanted-plugins/emu
+/plugin marketplace add enchanter-ai/emu
 /plugin install full@emu
 ```
 
@@ -65,13 +65,15 @@ compress-bash.sh           block-duplicates.sh         age-results.sh
 
 Prefix any command with `FULL:` to skip compression entirely.
 
-## Duplicate Read Blocking + Delta Mode
+## Duplicate Read Detection + Delta Mode
 
 1. **First read**: Pass through. Cache file hash + content copy.
-2. **Re-read, same hash**: Block (exit 2). Show preview and elapsed time.
-3. **Re-read, different hash**: Delta mode — show unified diff with ±3 context lines. Pass through.
+2. **Re-read, same hash**: Advisory only — emit a stderr note ("would have blocked, here's the cached preview, prefix `FULL:` to suppress"). The Read still proceeds per [`shared/conduct/hooks.md`](../../shared/conduct/hooks.md) advisory contract.
+3. **Re-read, different hash**: Delta mode — show unified diff with ±3 context lines on stderr. Pass through.
 
 Delta mode only activates when the diff is smaller than half the full file.
+
+> **Caching is best-effort.** Because the hook is advisory (never `exit 2`), the underlying Read always runs even when a duplicate is detected. The token-saving benefit is reduced to "agent reads the advisory and chooses to skip", not enforced gating. A future revision may move deliberate caching into a user-invoked Skill so the savings can be opt-in without violating the advisory-only hook contract.
 
 ## Output Efficiency
 

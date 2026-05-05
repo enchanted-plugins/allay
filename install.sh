@@ -3,7 +3,7 @@
 # meta-plugin pulls them all in via one dependency-resolution pass.
 set -euo pipefail
 
-REPO="https://github.com/enchanted-plugins/emu"
+REPO="https://github.com/enchanter-ai/emu"
 EMU_DIR="${HOME}/.claude/plugins/emu"
 
 step() { printf "\n\033[1;36m▸ %s\033[0m\n" "$*"; }
@@ -37,7 +37,7 @@ cat <<'EOF'
 
   Finish in Claude Code with TWO commands:
 
-    /plugin marketplace add enchanted-plugins/emu
+    /plugin marketplace add enchanter-ai/emu
     /plugin install full@emu
 
   That installs all 3 plugins via dependency resolution. To cherry-pick

@@ -14,13 +14,13 @@ No. Emu is self-contained — install `full@emu` and every command works standal
 
 - **Security vulnerability** — private advisory, never a public issue. See [SECURITY.md](../SECURITY.md).
 - **Reproducible bug** — a bug report issue with repro steps + exact versions.
-- **Usage question or half-formed idea** — [Discussions](https://github.com/enchanted-plugins/emu/discussions).
+- **Usage question or half-formed idea** — [Discussions](https://github.com/enchanter-ai/emu/discussions).
 
 The [SUPPORT.md](../SUPPORT.md) page has the exact links for each.
 
 ## Is Emu an official Anthropic product?
 
-No. Emu is an independent open-source plugin for [Claude Code](https://github.com/anthropics/claude-code) (Anthropic's CLI). It's published by [enchanted-plugins](https://github.com/enchanted-plugins) under the MIT license and is not affiliated with, endorsed by, or supported by Anthropic.
+No. Emu is an independent open-source plugin for [Claude Code](https://github.com/anthropics/claude-code) (Anthropic's CLI). It's published by [enchanter-ai](https://github.com/enchanter-ai) under the MIT license and is not affiliated with, endorsed by, or supported by Anthropic.
 
 ## Does Emu transmit any data off my machine?
 

@@ -25,5 +25,5 @@ The current shipped release. See [README.md](README.md) for the complete feature
 - State-keeper checkpoint hook — save continuity before compaction.
 - Honest-numbers contract: Emu reports what it actually observed, not what would look good in a demo.
 
-[Unreleased]: https://github.com/enchanted-plugins/emu/compare/v2.0.0...HEAD
-[2.0.0]: https://github.com/enchanted-plugins/emu/releases/tag/v2.0.0
+[Unreleased]: https://github.com/enchanter-ai/emu/compare/v2.0.0...HEAD
+[2.0.0]: https://github.com/enchanter-ai/emu/releases/tag/v2.0.0

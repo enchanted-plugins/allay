@@ -5,7 +5,7 @@ Emu is the session companion: it watches your context window, tracks token spend
 ## 1. Install (60 seconds)
 
 ```
-/plugin marketplace add enchanted-plugins/emu
+/plugin marketplace add enchanter-ai/emu
 /plugin install full@emu
 /plugin list
 ```

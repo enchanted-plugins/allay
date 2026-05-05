@@ -1,8 +1,10 @@
 #!/usr/bin/env bash
 # token-saver: PreToolUse hook for Read commands
-# Blocks duplicate file reads within a session (TTL-based).
-# Delta mode: if file changed since last read, returns diff instead of full content.
-# Exit 2 = intentional block. Exit 0 on all errors (spec rule #6).
+# Detects duplicate file reads within a session (TTL-based) and emits a stderr advisory.
+# Delta mode: if file changed since last read, emits a diff advisory.
+# Advisory contract per shared/conduct/hooks.md — never block, never exit non-zero.
+# Caching is best-effort; the underlying Read still proceeds. May be re-architected as a
+# user-invoked Skill in a future revision (see plugin README).
 
 
 # Subagent recursion guard — see shared/conduct/hooks.md
@@ -103,10 +105,14 @@ if [[ -f "$CACHE_FILE" ]]; then
         STATE_DIR="${PLUGIN_ROOT}/state"
         log_metric "${STATE_DIR}/metrics.jsonl" "$METRIC"
 
-        # Block with exit 2 + stderr message
-        printf "File %s read %ds ago. Unchanged. Preview: %s. Prefix FULL: to force." \
-          "$FILE_PATH" "$ELAPSED" "$PREVIEW" >&2
-        exit 2
+        # Advisory: would have blocked, but we let Read proceed per hooks.md contract.
+        {
+          echo "=== token-saver (advisory) ==="
+          echo "Would have blocked: duplicate Read of $FILE_PATH within ${ELAPSED}s TTL (unchanged)."
+          echo "Preview: $PREVIEW"
+          echo "Hint: prefix the path with FULL: to suppress this advisory in the future."
+        } >&2
+        exit 0
 
       else
         # ── DELTA MODE: File changed since last read — return diff only ──

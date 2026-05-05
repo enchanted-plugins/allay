@@ -50,7 +50,7 @@ The benchmark may **not** cherry-pick. Published numbers come from the median ru
 
 ```bash
 # clone and install
-git clone https://github.com/enchanted-plugins/emu.git
+git clone https://github.com/enchanter-ai/emu.git
 cd emu
 bash install.sh
 

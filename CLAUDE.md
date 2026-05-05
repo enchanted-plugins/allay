@@ -81,7 +81,7 @@ Never write these paths directly — they're owned by hooks and agents.
 
 ## Agent tiers
 
-All 4 agents are Haiku (validator tier — Orchestrator/Opus, Executor/Sonnet, Validator/Haiku is the @enchanted-plugins convention): `analyst`, `forecaster`, `compressor`, `restorer`. Each has an explicit output contract in its `agents/*.md`.
+All 4 agents are Haiku (validator tier — Orchestrator/Opus, Executor/Sonnet, Validator/Haiku is the @enchanter-ai convention): `analyst`, `forecaster`, `compressor`, `restorer`. Each has an explicit output contract in its `agents/*.md`.
 
 ## Terse output modes
 

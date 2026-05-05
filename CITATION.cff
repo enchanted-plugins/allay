@@ -4,16 +4,16 @@ message: "If you use this software, please cite it as below."
 type: software
 authors:
   - alias: klaiderman
-    affiliation: "enchanted-plugins"
-repository-code: "https://github.com/enchanted-plugins/emu"
-url: "https://github.com/enchanted-plugins/emu"
+    affiliation: "enchanter-ai"
+repository-code: "https://github.com/enchanter-ai/emu"
+url: "https://github.com/enchanter-ai/emu"
 license: MIT
 version: "2.0.0"
 date-released: "2026-04-20"
 abstract: "Context-health companion for Claude Code: runway forecasting, drift detection, per-tool analytics, and atomic checkpointing — honest numbers, zero cloud."
 keywords:
   - claude-code
-  - enchanted-plugins
+  - enchanter-ai
   - context-management
   - token-tracking
   - llm
