@@ -17,7 +17,7 @@ allowed-tools:
 
 Read metrics, compute savings + runway + drift, fill the EMU SESSION REPORT template.
 
-Governed by `@shared/conduct/tier-sizing.md` (senior-to-junior density).
+Governed by `@shared/foundations/conduct/tier-sizing.md` (senior-to-junior density).
 
 ## Metrics files
 
