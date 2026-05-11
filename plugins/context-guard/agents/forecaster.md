@@ -16,7 +16,7 @@ allowed-tools:
 
 Read `metrics.jsonl`, compute runway, fill the template. All math runs in awk — you orchestrate and format.
 
-Governed by `@shared/foundations/conduct/tier-sizing.md` (senior-to-junior density).
+Governed by `@../enchanter-foundations/packages/core/conduct/tier-sizing.md` (senior-to-junior density).
 
 ## Execution
 

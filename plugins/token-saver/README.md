@@ -68,7 +68,7 @@ Prefix any command with `FULL:` to skip compression entirely.
 ## Duplicate Read Detection + Delta Mode
 
 1. **First read**: Pass through. Cache file hash + content copy.
-2. **Re-read, same hash**: Advisory only — emit a stderr note ("would have blocked, here's the cached preview, prefix `FULL:` to suppress"). The Read still proceeds per [`shared/foundations/conduct/hooks.md`](../../shared/foundations/conduct/hooks.md) advisory contract.
+2. **Re-read, same hash**: Advisory only — emit a stderr note ("would have blocked, here's the cached preview, prefix `FULL:` to suppress"). The Read still proceeds per [`../enchanter-foundations/packages/core/conduct/hooks.md`](../../../enchanter-foundations/packages/core/conduct/hooks.md) advisory contract.
 3. **Re-read, different hash**: Delta mode — show unified diff with ±3 context lines on stderr. Pass through.
 
 Delta mode only activates when the diff is smaller than half the full file.

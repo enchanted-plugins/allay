@@ -28,4 +28,4 @@ No. Emu has no outbound network code — every hook and script either writes to 
 
 ## Can I disable Emu's token-saver compression or dedup?
 
-Yes, per sub-plugin. Set the relevant entry under `plugins` in your `.claude/settings.json` to `{ "enabled": false }` — for example, `{"token-saver": {"enabled": false}}`. All compression and dedup behavior is advisory per the shared [hooks contract](../shared/foundations/conduct/hooks.md); it observes and injects, it never blocks a tool call.
+Yes, per sub-plugin. Set the relevant entry under `plugins` in your `.claude/settings.json` to `{ "enabled": false }` — for example, `{"token-saver": {"enabled": false}}`. All compression and dedup behavior is advisory per the shared [hooks contract](../../enchanter-foundations/packages/core/conduct/hooks.md); it observes and injects, it never blocks a tool call.
