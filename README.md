@@ -193,16 +193,13 @@ bash <(curl -s https://raw.githubusercontent.com/enchanter-ai/emu/main/install.s
 
 ## Quickstart
 
-Install, then run Emu's self-check, then get a runway readout. Sixty seconds:
-
-```
-/plugin install full@emu
-/emu:doctor
-/emu:report
+```bash
+git clone https://github.com/enchanter-ai/emu
+cd emu
+./scripts/bootstrap.sh    # canonical first command — installs enchanter-foundations sibling
 ```
 
-Expected: `/emu:doctor` confirms hooks registered, jq available, state dirs writable. `/emu:report` prints a session dashboard — token runway (`~N turns remaining`), per-tool token breakdown, any drift alerts fired. No config required; defaults are honest. See [docs/getting-started.md](docs/getting-started.md) for the full guided first run.
-
+Without `./scripts/bootstrap.sh`, conduct imports will silently miss and Claude Code's `@`-loader will fail-soft. Always bootstrap first.
 ## 3 Plugins, 4 Agents, 9 Algorithms
 
 | Plugin | Hook | Command | Algorithms |
