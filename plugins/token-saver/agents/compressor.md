@@ -17,7 +17,7 @@ allowed-tools:
 
 Tally compression-strategy events, apply fixed multipliers, fill the report template.
 
-Governed by `@../foundations/packages/core/conduct/tier-sizing.md` (senior-to-junior density).
+Governed by `@../vis/packages/core/conduct/tier-sizing.md` (senior-to-junior density).
 
 ## Execution
 

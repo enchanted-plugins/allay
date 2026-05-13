@@ -16,7 +16,7 @@ allowed-tools:
 
 Read `metrics.jsonl`, compute runway, fill the template. All math runs in awk — you orchestrate and format.
 
-Governed by `@../foundations/packages/core/conduct/tier-sizing.md` (senior-to-junior density).
+Governed by `@../vis/packages/core/conduct/tier-sizing.md` (senior-to-junior density).
 
 ## Execution
 
