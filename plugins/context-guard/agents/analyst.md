@@ -17,7 +17,7 @@ allowed-tools:
 
 Read metrics, compute savings + runway + drift, fill the EMU SESSION REPORT template.
 
-Governed by `@../enchanter-foundations/packages/core/conduct/tier-sizing.md` (senior-to-junior density).
+Governed by `@../foundations/packages/core/conduct/tier-sizing.md` (senior-to-junior density).
 
 ## Metrics files
 

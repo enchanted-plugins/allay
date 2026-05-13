@@ -87,7 +87,7 @@ No side effects, no re-downloads, no "would you like to keep…" prompts. The ne
 
 ## Governance
 
-- The shared behavioral contract at [../enchanter-foundations/packages/core/conduct/hooks.md](../enchanter-foundations/packages/core/conduct/hooks.md) § Injection over denial forbids hooks from taking side effects on repo state (auto-commits, auto-renames). Emu's hooks adhere to this.
+- The shared behavioral contract at [../foundations/packages/core/conduct/hooks.md](../foundations/packages/core/conduct/hooks.md) § Injection over denial forbids hooks from taking side effects on repo state (auto-commits, auto-renames). Emu's hooks adhere to this.
 - Any change to what Emu stores or transmits requires an ADR in [docs/adr/](docs/adr/) before merge.
 - The `CODEOWNERS` file routes privacy-relevant paths through the maintainer.
 
